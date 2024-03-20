@@ -24,6 +24,8 @@ namespace ChemicalProject.Models
 		public string Justify { get; set; }
 
 		public bool? Status { get; set; }
+		/*public DateTime? RequestDate {  get; set; }
+		public DateTime? ApprovalDate {  get; set; }*/
 	}
 }
 	

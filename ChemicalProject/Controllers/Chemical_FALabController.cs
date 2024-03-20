@@ -59,6 +59,7 @@ namespace ChemicalProject.Controllers
         {
             if (ModelState.IsValid)
             {
+                /*chemical_FALab.RequestDate = DateTime.Now;*/
                 _context.Add(chemical_FALab);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

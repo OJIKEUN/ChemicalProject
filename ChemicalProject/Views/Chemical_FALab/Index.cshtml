@@ -31,11 +31,15 @@
                 @Html.DisplayNameFor(model => model.price)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Justify)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Justify)
+            </th>
+            
+            @* <th>
+                @Html.DisplayNameFor(model => model.RequestDate)
+            </th> *@
             <th></th>
         </tr>
     </thead>
@@ -60,12 +64,27 @@
             <td>
                 @Html.DisplayFor(modelItem => item.price)
             </td>
+                <td>
+                    @if (item.Status == null)
+                    {
+                        <span class="text-warning">Waiting for Approval</span>
+                    }
+                    else if ((bool)item.Status)
+                    {
+                        <span class="text-success">Approved</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Rejected</span>
+                    }
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Justify)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
+                
+            @* <td>
+                @Html.DisplayFor(modelItem => item.RequestDate)
+            </td> *@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Approval</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
