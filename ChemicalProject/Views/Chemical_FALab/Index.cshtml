@@ -67,15 +67,18 @@
                 <td>
                     @if (item.Status == null)
                     {
-                        <span class="text-warning">Waiting for Approval</span>
+                        <span class="badge text-bg-secondary">Waiting for Approval</span>
+                        @* <span class="text-warning"></span> *@
                     }
                     else if ((bool)item.Status)
                     {
-                        <span class="text-success">Approved</span>
+                        <span class="badge text-bg-success">Appoved</span>
+                        @* <span class="text-success">Approved</span> *@
                     }
                     else
                     {
-                        <span class="text-danger">Rejected</span>
+                        <span class="badge text-bg-danger">Rejected</span>
+                        @* <span class="text-danger">Rejected</span> *@
                     }
                 </td>
             <td>
@@ -88,7 +91,8 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Approval</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-action="Consumption" asp-route-id="@item.Id">Consumption</a>
             </td>
         </tr>
 }

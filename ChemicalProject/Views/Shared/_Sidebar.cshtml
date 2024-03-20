@@ -13,6 +13,7 @@
 		<!-- sidebar menu start -->
 		<div class="sidebar-menu">
 			<ul>
+				<!-- user menu -->
 				<li class="header-menu">USER</li>
 				<li>
 					<a asp-controller="Home" asp-action="Index">
@@ -26,46 +27,8 @@
 						<span class="menu-text">Request Bahan Chemical</span>
 					</a>
 				</li>
-				@* <li class="sidebar-dropdown">
-					<a href="#">
-						<i class="icon-devices_other"></i>
-						<span class="menu-text">Bahan Chemical</span>
-					</a>
-					<div class="sidebar-submenu">
-						<ul>
-							<li>
-								<a asp-controller="Home" asp-action="Index">Ortho Phosphoric Acid 85%</a>
-							</li>
-							<li>
-								<a asp-controller="Departemen" asp-action="Index">Ethanolamine </a>
-							</li>
-							<li>
-								<a asp-controller="StockBarangs" asp-action="Index">Dimethyl Sulfoxide (DMSO)2</a>
-							</li><li>
-								<a asp-controller="Barangs" asp-action="Index">Hydrochloric Acid (HCl) 37%</a>
-							</li><li>
-								<a href="sales-dashboard.html">Hydrogen Peroxide (H2O2) 30%</a>
-							</li><li>
-								<a href="sales-dashboard.html">Nitric Acid (HNO3) 69-70%</a>
-							</li><li>
-								<a href="sales-dashboard.html">Nitric Acid (HNO3) 100%</a>
-							</li><li>
-								<a href="sales-dashboard.html">Potassium Hydroxide (KOH)</a>
-							</li><li>
-								<a href="sales-dashboard.html">REN HY (Hardener)</a>
-							</li><li>
-								<a href="sales-dashboard.html">Sulfuric Acid 95~97%</a>
-							</li><li>
-								<a href="sales-dashboard.html">Ammonia Solution (NH4OH) 25%</a>
-							</li><li>
-								<a href="sales-dashboard.html">Acetone</a>
-							</li><li>
-								<a href="sales-dashboard.html">Araldyte</a>
-							</li>
-						</ul>
-					</div>
-				</li> *@
 				
+				<!-- admin menu -->
 				<li class="header-menu">ADMIN</li>
 				<li class="sidebar-dropdown">
 					<a href="#">
@@ -75,7 +38,7 @@
 					<div class="sidebar-submenu">
 						<ul>
 							<li>
-								<a href="index.html">Admin Dashboard</a>
+								<a asp-controller="Chemical_FALab" asp-action="Edit">Request Status</a>
 							</li>
 							<li>
 								<a href="sales-dashboard.html">Sales Dashboard</a>
