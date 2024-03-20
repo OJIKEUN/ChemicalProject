@@ -1,0 +1,100 @@
+﻿<nav id="sidebar" class="sidebar-wrapper">
+
+	<!-- Sidebar brand start  -->
+	<div class="w-100 d-flex">
+		<a class="navbar-brand mx-auto flex-fill text-center" asp-controller="home" asp-action="index" style="margin-top:20px;">
+			<img src="~/img/LOGO.png" width="auto" height="24" alt="Website Logo" class="d-block mx-auto">
+		</a>
+	</div>
+	<hr style="margin-top:1rem;margin-bottom:0;"> <!-- Sidebar brand end  -->
+	<!-- Sidebar content start -->
+	<div class="sidebar-content">
+
+		<!-- sidebar menu start -->
+		<div class="sidebar-menu">
+			<ul>
+				<li class="header-menu">USER</li>
+				<li>
+					<a asp-controller="Home" asp-action="Index">
+						<i class="icon-message-circle"></i>
+						<span class="menu-text">Dashboard</span>
+					</a>
+				</li>
+				<li>
+					<a asp-controller="Chemical_FALab" asp-action="Index">
+						<i class="icon-message-circle"></i>
+						<span class="menu-text">Request Bahan Chemical</span>
+					</a>
+				</li>
+				@* <li class="sidebar-dropdown">
+					<a href="#">
+						<i class="icon-devices_other"></i>
+						<span class="menu-text">Bahan Chemical</span>
+					</a>
+					<div class="sidebar-submenu">
+						<ul>
+							<li>
+								<a asp-controller="Home" asp-action="Index">Ortho Phosphoric Acid 85%</a>
+							</li>
+							<li>
+								<a asp-controller="Departemen" asp-action="Index">Ethanolamine </a>
+							</li>
+							<li>
+								<a asp-controller="StockBarangs" asp-action="Index">Dimethyl Sulfoxide (DMSO)2</a>
+							</li><li>
+								<a asp-controller="Barangs" asp-action="Index">Hydrochloric Acid (HCl) 37%</a>
+							</li><li>
+								<a href="sales-dashboard.html">Hydrogen Peroxide (H2O2) 30%</a>
+							</li><li>
+								<a href="sales-dashboard.html">Nitric Acid (HNO3) 69-70%</a>
+							</li><li>
+								<a href="sales-dashboard.html">Nitric Acid (HNO3) 100%</a>
+							</li><li>
+								<a href="sales-dashboard.html">Potassium Hydroxide (KOH)</a>
+							</li><li>
+								<a href="sales-dashboard.html">REN HY (Hardener)</a>
+							</li><li>
+								<a href="sales-dashboard.html">Sulfuric Acid 95~97%</a>
+							</li><li>
+								<a href="sales-dashboard.html">Ammonia Solution (NH4OH) 25%</a>
+							</li><li>
+								<a href="sales-dashboard.html">Acetone</a>
+							</li><li>
+								<a href="sales-dashboard.html">Araldyte</a>
+							</li>
+						</ul>
+					</div>
+				</li> *@
+				
+				<li class="header-menu">ADMIN</li>
+				<li class="sidebar-dropdown">
+					<a href="#">
+						<i class="icon-devices_other"></i>
+						<span class="menu-text">Dashboards</span>
+					</a>
+					<div class="sidebar-submenu">
+						<ul>
+							<li>
+								<a href="index.html">Admin Dashboard</a>
+							</li>
+							<li>
+								<a href="sales-dashboard.html">Sales Dashboard</a>
+							</li>
+							<li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<a href="chat.html">
+						<i class="icon-message-circle"></i>
+						<span class="menu-text">Request</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<!-- sidebar menu end -->
+
+	</div>
+	<!-- Sidebar content end -->
+
+</nav>

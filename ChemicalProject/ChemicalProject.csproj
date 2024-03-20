@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="8.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\.DS_Store" />
+    <None Include="wwwroot\fonts\.DS_Store" />
+    <None Include="wwwroot\img\.DS_Store" />
+    <None Include="wwwroot\img\cards\.DS_Store" />
+    <None Include="wwwroot\img\docs\.DS_Store" />
+    <None Include="wwwroot\js\.DS_Store" />
+    <None Include="wwwroot\vendor\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\crm\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\custom\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\examples\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\examples\candlestick\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\examples\column\.DS_Store" />
+    <None Include="wwwroot\vendor\apex\examples\pie\.DS_Store" />
+    <None Include="wwwroot\vendor\bs-select\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\css\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\css\list\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\css\timegrid\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\js\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\js\google-calendar\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\js\list\.DS_Store" />
+    <None Include="wwwroot\vendor\calendar\js\timegrid\.DS_Store" />
+    <None Include="wwwroot\vendor\circliful\.DS_Store" />
+    <None Include="wwwroot\vendor\datatables\.DS_Store" />
+    <None Include="wwwroot\vendor\datatables\custom\.DS_Store" />
+    <None Include="wwwroot\vendor\datepicker\.DS_Store" />
+    <None Include="wwwroot\vendor\jvectormap\.DS_Store" />
+    <None Include="wwwroot\vendor\lobipanel\.DS_Store" />
+    <None Include="wwwroot\vendor\morris\.DS_Store" />
+    <None Include="wwwroot\vendor\morris\custom\.DS_Store" />
+    <None Include="wwwroot\vendor\slimscroll\.DS_Store" />
+    <None Include="wwwroot\vendor\summernote\.DS_Store" />
+    <None Include="wwwroot\vendor\wizard\.DS_Store" />
+  </ItemGroup>
+
+</Project>

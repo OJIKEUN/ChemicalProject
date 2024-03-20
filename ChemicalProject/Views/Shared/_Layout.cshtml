@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Chemical</title>
+	<!-- Bootstrap css -->
+	<link rel="stylesheet" href="~/css/bootstrap.min.css">
+	<!-- Icomoon Font Icons css -->
+	<link rel="stylesheet" href="~/fonts/style.css">
+	<!-- Main css -->
+	<link rel="stylesheet" href="~/css/main.css">
+</head>
+<body>
+	<!-- Page wrapper start -->
+	<div class="page-wrapper">
+
+		<!-- Sidebar wrapper start -->
+		<partial name="_Sidebar" />
+		<!-- Sidebar wrapper end -->
+
+		<!-- Page content start  -->
+		<div class="page-content">
+			<partial name="_Header" />
+			
+			<!-- Page header start -->
+			<div class="page-header">
+			</div>
+			<!-- Page header end -->
+			<!-- Main container start -->
+			<div class="main-container">
+				<main role="main">
+					@RenderBody()
+				</main>
+			</div>
+			<!-- Main container end -->
+
+		</div>
+		<!-- Page content end -->
+
+	</div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+	<!-- Required jQuery first, then Bootstrap Bundle JS -->
+	<script src="~/js/jquery.min.js"></script>
+	<script src="~/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/moment.js"></script>	
+
+
+	<!-- *************
+		************ Vendor Js Files *************
+	************* -->
+	<!-- Slimscroll JS -->
+	<script src="~/vendor/slimscroll/slimscroll.min.js"></script>
+	<script src="~/vendor/slimscroll/custom-scrollbar.js"></script>
+
+	<!-- Daterange -->
+	<script src="~/vendor/daterange/daterange.js"></script>
+	<script src="~/vendor/daterange/custom-daterange.js"></script>
+
+	<!-- Apex Charts -->
+	<script src="~/vendor/apex/apexcharts.min.js"></script>
+	<script src="~/vendor/apex/admin/visitors.js"></script>
+	<script src="~/vendor/apex/admin/deals.js"></script>
+	<script src="~/vendor/apex/admin/income.js"></script>
+	<script src="~/vendor/apex/admin/customers.js"></script>
+
+	<!-- Main JS -->
+	<script src="~/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
