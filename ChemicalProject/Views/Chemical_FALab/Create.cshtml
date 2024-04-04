@@ -4,63 +4,110 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+@* <h1>Create</h1>
 
-<h4>Chemical_FALab</h4>
+
+<h4>New Chemical FA Lab </h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+ *@
+<div class="row gutters justify-content-center">
+    <div class="col-10 mt-5">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Badge" class="control-label"></label>
-                <input asp-for="Badge" class="form-control" />
-                <span asp-validation-for="Badge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ChemicalName" class="control-label"></label>
-                <input asp-for="ChemicalName" class="form-control" />
-                <span asp-validation-for="ChemicalName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Brand" class="control-label"></label>
-                <input asp-for="Brand" class="form-control" />
-                <span asp-validation-for="Brand" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Packaging" class="control-label"></label>
-                <input asp-for="Packaging" class="form-control" />
-                <span asp-validation-for="Packaging" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Unit" class="control-label"></label>
-                <input asp-for="Unit" class="form-control" />
-                <span asp-validation-for="Unit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="price" class="control-label"></label>
-                <input asp-for="price" class="form-control" />
-                <span asp-validation-for="price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Justify" class="control-label"></label>
-                <input asp-for="Justify" class="form-control" />
-                <span asp-validation-for="Justify" class="text-danger"></span>
-            </div>
+            <div class="card m-0">
+                <div class="card-header">
+                    <div class="card-title">Add New Chemical</div>
+                    <div class="card-sub-title">Kiw Kiw </div>
+                </div>
 
-            <div class="form-group">
-            
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row gutters justify-content-center">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="Badge" class="control-label"></label>
+                                <input asp-for="Badge" class="form-control" />
+                                <span asp-validation-for="Badge" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="ChemicalName" class="control-label"></label>
+                                <input asp-for="ChemicalName" class="form-control" />
+                                <span asp-validation-for="ChemicalName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="Brand" class="control-label"></label>
+                                <input asp-for="Brand" class="form-control" />
+                                <span asp-validation-for="Brand" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="Packaging" class="control-label"></label>
+                                <input asp-for="Packaging" class="form-control" />
+                                <span asp-validation-for="Packaging" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="Unit" class="control-label"></label>
+                                <input asp-for="Unit" class="form-control" />
+                                <span asp-validation-for="Unit" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="price" class="control-label"></label>
+                                <input asp-for="price" class="form-control" />
+                                <span asp-validation-for="price" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Justify" class="control-label"></label>
+                        <textarea asp-for="Justify" class="form-control" id="justifyTextarea" placeholder="Enter justification" maxlength="1000" rows="4"></textarea>
+                        <div class="form-text text-muted">
+                            <p id="characterLeft" class="help-block">140 characters left</p>
+                        </div>
+                        <span asp-validation-for="Justify" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="container d-flex justify-content-center">
+                        <input type="submit" value="Create" class="btn btn-primary" style="margin: 0 10px;" />
+                        <a asp-action="Index" class="btn btn-secondary" style="margin: 0 10px;">Back to List</a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+        <script>
+            $(document).ready(function () {
+                var justifyTextarea = $('#justifyTextarea');
+                var characterLeftDisplay = $('#characterLeft');
+                var maxLength = justifyTextarea.attr('maxlength');
+
+                updateCharacterCount();
+
+                justifyTextarea.on('input', function () {
+                    updateCharacterCount();
+                });
+
+                function updateCharacterCount() {
+                    var enteredText = justifyTextarea.val();
+                    var remainingCharacters = maxLength - enteredText.length;
+                    characterLeftDisplay.text(remainingCharacters + ' characters left');
+                }
+            });
+        </script>
+
+    }
 }

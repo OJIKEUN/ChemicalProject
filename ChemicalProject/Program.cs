@@ -31,6 +31,18 @@ if (!app.Environment.IsDevelopment())
 	app.UseHsts();
 }
 
+// Konfigurasi routing
+
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "approval",
+    pattern: "Approval/{action=Index}/{id?}");
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

@@ -21,9 +21,18 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: Chemical_FALab
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Chemicals.ToListAsync());
+            return View();
+        }
+
+        // untuk dapet data di table
+        public JsonResult GetData()
+        {
+            var chemical = _context.Chemicals
+                .ToList();
+
+            return Json(chemical);
         }
 
         // GET: Chemical_FALab/Details/5
@@ -83,9 +92,7 @@ namespace ChemicalProject.Controllers
             return View(chemical_FALab);
         }
 
-        // POST: Chemical_FALab/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Chemical_FALab/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,price,Justify")] Chemical_FALab chemical_FALab)
@@ -94,17 +101,29 @@ namespace ChemicalProject.Controllers
             {
                 return NotFound();
             }
+            var existingRecord = await _context.Chemicals.FindAsync(id);
+            if (existingRecord == null)
+            {
+                return NotFound();
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(chemical_FALab);
+                    existingRecord.Badge = chemical_FALab.Badge;
+                    existingRecord.ChemicalName = chemical_FALab.ChemicalName;
+                    existingRecord.Brand = chemical_FALab.Brand;
+                    existingRecord.Packaging = chemical_FALab.Packaging;
+                    existingRecord.Unit = chemical_FALab.Unit;
+                    existingRecord.price = chemical_FALab.price;
+                    existingRecord.Justify = chemical_FALab.Justify;
+                    _context.Update(existingRecord);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!Chemical_FALabExists(chemical_FALab.Id))
+                    if (!Chemical_FALabExists(existingRecord.Id))
                     {
                         return NotFound();
                     }
@@ -115,41 +134,42 @@ namespace ChemicalProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(chemical_FALab);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Approve(int id)
+        public async Task<IActionResult> Approve(int? id)
         {
             var chemical = await _context.Chemicals.FindAsync(id);
+
             if (chemical == null)
             {
                 return NotFound();
             }
 
-            chemical.Status = true; // Ganti dengan status yang diinginkan untuk approval
+            chemical.Status = true;
             _context.Update(chemical);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Chemical approved successfully!" });
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reject(int id)
+        public async Task<IActionResult> Reject(int? id)
         {
             var chemical = await _context.Chemicals.FindAsync(id);
+
             if (chemical == null)
             {
                 return NotFound();
             }
 
-            chemical.Status = false; // Ganti dengan status yang diinginkan untuk approval
+            chemical.Status = false;
             _context.Update(chemical);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = "Chemical rejected successfully!" });
         }
 
         // GET: Chemical_FALab/Delete/5
@@ -189,5 +209,13 @@ namespace ChemicalProject.Controllers
         {
             return _context.Chemicals.Any(e => e.Id == id);
         }
+
+        public IActionResult ApprovalList()
+        {
+            var chemicalsToApprove = _context.Chemicals.Where(c => c.Status == null);
+            return View(chemicalsToApprove);
+        }
+
+
     }
 }

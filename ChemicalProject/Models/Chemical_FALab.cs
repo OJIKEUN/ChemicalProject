@@ -15,17 +15,18 @@ namespace ChemicalProject.Models
 
 		public string Brand { get; set; }
 
-		public int Packaging { get; set;}
+		public int Packaging { get; set; }
 
 		public string Unit { get; set; }
 
-		public double price { get; set; }
+        public int MinimumStock { get; set; }
+        public double price { get; set; }
 
 		public string Justify { get; set; }
 
 		public bool? Status { get; set; }
-		/*public DateTime? RequestDate {  get; set; }
-		public DateTime? ApprovalDate {  get; set; }*/
-	}
+		public DateTime? RequestDate { get; set; }
+        public DateTime? ApprovalDate { get; set; }
+    }
 }
 	

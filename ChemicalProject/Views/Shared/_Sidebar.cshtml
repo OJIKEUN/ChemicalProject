@@ -24,7 +24,7 @@
 				<li>
 					<a asp-controller="Chemical_FALab" asp-action="Index">
 						<i class="icon-message-circle"></i>
-						<span class="menu-text">Request Bahan Chemical</span>
+						<span class="menu-text">FA LAB CHEMICAL</span>
 					</a>
 				</li>
 				
@@ -33,17 +33,21 @@
 				<li class="sidebar-dropdown">
 					<a href="#">
 						<i class="icon-devices_other"></i>
-						<span class="menu-text">Dashboards</span>
+						<span class="menu-text">Request List</span>
 					</a>
 					<div class="sidebar-submenu">
 						<ul>
 							<li>
-								<a asp-controller="Chemical_FALab" asp-action="Edit">Request Status</a>
+								<a asp-controller="Chemical_FALab" asp-action="ApprovalList">
+									<span class="menu-text">New Chemical</span>
+								</a>
 							</li>
 							<li>
-								<a href="sales-dashboard.html">Sales Dashboard</a>
+								<a href="sales-dashboard.html">Update Chemical</a>
 							</li>
 							<li>
+								<a asp-controller="Approval" asp-action="Index">Approval List</a>
+							</li>
 						</ul>
 					</div>
 				</li>

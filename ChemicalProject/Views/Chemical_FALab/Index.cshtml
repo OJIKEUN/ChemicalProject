@@ -1,100 +1,79 @@
-﻿@model IEnumerable<ChemicalProject.Models.Chemical_FALab>
-
-@{
-    ViewData["Title"] = "Index";
+﻿@{
+    ViewData["Title"] = "New Chemical";
 }
 
-<h1>Index</h1>
+<link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
+<div container>
+    <div class="row gutters mt-4">
+        <div class="card">
+            <div class="card-header">BIJI</div>
+            <hr class="m-0" />
+            <div class="card-body">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Badge)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChemicalName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Packaging)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Unit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Justify)
-            </th>
-            
-            @* <th>
-                @Html.DisplayNameFor(model => model.RequestDate)
-            </th> *@
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Badge)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChemicalName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Packaging)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Unit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.price)
-            </td>
-                <td>
-                    @if (item.Status == null)
-                    {
-                        <span class="badge text-bg-secondary">Waiting for Approval</span>
-                        @* <span class="text-warning"></span> *@
-                    }
-                    else if ((bool)item.Status)
-                    {
-                        <span class="badge text-bg-success">Appoved</span>
-                        @* <span class="text-success">Approved</span> *@
-                    }
-                    else
-                    {
-                        <span class="badge text-bg-danger">Rejected</span>
-                        @* <span class="text-danger">Rejected</span> *@
-                    }
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Justify)
-            </td>
-                
-            @* <td>
-                @Html.DisplayFor(modelItem => item.RequestDate)
-            </td> *@
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Approval</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-action="Consumption" asp-route-id="@item.Id">Consumption</a>
-            </td>
-        </tr>
+                <div id="toolbar">
+                    <a class="btn btn-primary btn-lg" asp-action="Create">
+                        Create New Chemical
+                    </a>
+                </div>
+
+                <table id="table"
+                       data-toggle="table"
+                       data-locale="en-US"
+                       data-sticky-header="true"
+                       data-sticky-header-offset-y="60"
+                       data-search="true"
+                       data-search-highlight="true"
+                       data-show-loading="false"
+                       data-buttons="[]"
+                       data-toolbar="#toolbar"
+                       data-url="@Url.Action("GetData", "Chemical_FALab")">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true">Id</th>
+                            <th data-field="badge" data-sortable="true">Badge</th>
+                            <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
+                            <th data-field="brand" data-sortable="true">Brand</th>
+                            <th data-field="packaging" data-sortable="true">Packaging</th>
+                            <th data-field="unit" data-sortable="true">Unit</th>
+                            <th data-field="price" data-sortable="true">Price</th>
+                            <th data-field="justify" data-sortable="true" data-width="250">Justify</th>
+                            <th data-field="status" data-sortable="true" data-formatter="statusFormatter" class="text-center">Status</th>
+                            <th data-formatter="viewFormatter" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
+    <script src="~/vendor/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+
+    <script>
+        function statusFormatter(value, row, index) {
+            let statusHtml;
+            if (value === null) {
+                statusHtml = '<span class="badge text-bg-secondary" style="line-height: 2; vertical-align: middle;">Waiting for Approval</span>';
+            } else if (value === true) {
+                statusHtml = '<span class="badge text-bg-success" style="line-height: 2; vertical-align: middle;">Approved</span>';
+            } else {
+                statusHtml = '<span class="badge text-bg-danger" style="line-height: 2; vertical-align: middle;">Rejected</span>';
+            }
+            return statusHtml;
+        }
+
+        function viewFormatter(value, row, index) {
+            return `
+                                <a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-primary btn-sm shadow">Add</a>
+
+                                <a href="@Url.Action("Edit", "Chemical_FALab")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
+
+                                <a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>
+                            `;
+        }
+    </script>
 }
-    </tbody>
-</table>
