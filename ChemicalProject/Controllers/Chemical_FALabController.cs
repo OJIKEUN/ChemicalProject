@@ -27,12 +27,32 @@ namespace ChemicalProject.Controllers
         }
 
         // untuk dapet data di table
-        public JsonResult GetData()
+        //API ENDPOINT
+        [HttpGet]
+        public IActionResult GetData()
         {
-            var chemical = _context.Chemicals
-                .ToList();
+            var employees = _context.Chemicals
+                .Select(g => new
+                {
+                    id = g.Id,
+                    badge = g.Badge,
+                    chemicalName = g.ChemicalName,
+                    brand = g.Brand,
+                    packaging = g.Packaging,
+                    unit = g.Unit,
+                    minimumStock = g.MinimumStock,
+                    price = g.Price,
+                    justify = g.Justify,
+                    requestDate = g.RequestDate.HasValue ? g.RequestDate.Value.ToString("dd MMM yyyy") : null,
+                    statusManager = g.StatusManager,
+                    remarkManager = g.RemarkManager,
+                    approvalDateManager = g.ApprovalDateManager.HasValue ? g.ApprovalDateManager.Value.ToString("dd MMM yyyy") : null,
+                    statusESH = g.StatusESH,
+                    remarkESH = g.RemarkESH,
+                    approvalDateESH = g.ApprovalDateESH.HasValue ? g.ApprovalDateESH.Value.ToString("dd MMM yyyy") : null,
+                }).ToList();
 
-            return Json(chemical);
+            return Json(new { rows = employees });
         }
 
         // GET: Chemical_FALab/Details/5
@@ -64,7 +84,7 @@ namespace ChemicalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,price,Justify,Status")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,price,Justify,Status,RequestDate")] Chemical_FALab chemical_FALab)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +115,7 @@ namespace ChemicalProject.Controllers
         // POST: Chemical_FALab/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,price,Justify")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,price,Justify,RequestDate")] Chemical_FALab chemical_FALab)
         {
             if (id != chemical_FALab.Id)
             {
@@ -116,8 +136,10 @@ namespace ChemicalProject.Controllers
                     existingRecord.Brand = chemical_FALab.Brand;
                     existingRecord.Packaging = chemical_FALab.Packaging;
                     existingRecord.Unit = chemical_FALab.Unit;
-                    existingRecord.price = chemical_FALab.price;
+                    existingRecord.MinimumStock = chemical_FALab.MinimumStock;
+                    existingRecord.Price = chemical_FALab.Price;
                     existingRecord.Justify = chemical_FALab.Justify;
+                    existingRecord.RequestDate = chemical_FALab.RequestDate;
                     _context.Update(existingRecord);
                     await _context.SaveChangesAsync();
                 }
@@ -148,7 +170,7 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            chemical.Status = true;
+            chemical.StatusManager = true;
             _context.Update(chemical);
             await _context.SaveChangesAsync();
 
@@ -165,7 +187,7 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            chemical.Status = false;
+            chemical.StatusManager = false;
             _context.Update(chemical);
             await _context.SaveChangesAsync();
 
@@ -212,7 +234,7 @@ namespace ChemicalProject.Controllers
 
         public IActionResult ApprovalList()
         {
-            var chemicalsToApprove = _context.Chemicals.Where(c => c.Status == null);
+            var chemicalsToApprove = _context.Chemicals.Where(c => c.StatusManager == null);
             return View(chemicalsToApprove);
         }
 

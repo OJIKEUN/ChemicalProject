@@ -1,9 +1,9 @@
 ﻿@{
-    ViewData["Title"] = "ESH Appoval";
+    ViewData["Title"] = "Manager Appoval";
 }
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
-<div container>
+
     <div class="row gutters mt-4">
         <div class="card">
             <div class="card-header">biji</div>
@@ -19,7 +19,7 @@
                        data-show-refresh="true"
                        data-show-columns="true"
                        data-key-events="true"
-                       data-url="@Url.Action("GetData", "Chemical_FALab")"
+                       data-url="@Url.Action("GetData", "ApprovalManager")"
                        data-pagination="true"
                        data-page-size="50">
                     <thead>
@@ -31,7 +31,7 @@
                             <th data-field="unit" data-sortable="true">Unit</th>
                             <th data-field="price" data-sortable="true">Price</th>
                             <th data-field="justify" data-sortable="true">Justify</th>
-                            <th data-field="status" data-sortable="true">Status</th>
+                            <th data-field="statusManager" data-sortable="true">Status</th>
                             <th data-field="actions" data-formatter="actionFormatter" class="text-center no-space">Actions</th>
                         </tr>
                     </thead>

@@ -41,11 +41,17 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Unit)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.price)
+            @Html.DisplayNameFor(model => model.MinimumStock)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.price)
+            @Html.DisplayFor(model => model.MinimumStock)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Justify)
@@ -54,10 +60,22 @@
             @Html.DisplayFor(model => model.Justify)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.StatusManager)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+            @Html.DisplayFor(model => model.StatusManager)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StatusESH)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StatusESH)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.RequestDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.RequestDate)
         </dd>
     </dl>
     

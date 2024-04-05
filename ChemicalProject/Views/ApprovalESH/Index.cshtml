@@ -1,0 +1,202 @@
+﻿@{
+    ViewData["Title"] = "ESH Appoval";
+}
+<link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
+
+<div class="row gutters mt-4">
+    <div class="card">
+        <div class="card-header">biji ESH</div>
+        <hr class="m-0" />
+        <div class="card-body">
+            <table id="table"
+                   data-toggle="table"
+                   data-locale="en-US"
+                   data-search="true"
+                   data-search-highlight="true"
+                   data-search-align="left"
+                   data-show-toggle="true"
+                   data-show-refresh="true"
+                   data-show-columns="true"
+                   data-key-events="true"
+                   data-url="@Url.Action("GetData", "ApprovalESH")"
+                   data-pagination="true">
+                <thead>
+                    <tr>
+                        <th data-field="badge" data-sortable="true">Badge</th>
+                        <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
+                        <th data-field="brand" data-sortable="true">Brand</th>
+                        <th data-field="packaging" data-sortable="true">Packaging</th>
+                        <th data-field="unit" data-sortable="true">Unit</th>
+                        <th data-field="minimumStock" data-sortable="true" data-width="150">Minimum Stock</th>
+                        <th data-field="price" data-sortable="true">Price</th>
+                        <th data-field="justify" data-sortable="true">Justify</th>
+                        <th data-field="statusManager" data-sortable="true" data-formatter="statusFormatter" class="text-center">Status Manager</th>
+                        <th data-field="statusESH" data-sortable="true" data-formatter="statusFormatter" class="text-center">Status ESH</th>
+                        <th data-field="requestDate" data-sortable="true">Request Date</th>
+                        <th data-field="actions" data-formatter="actionFormatter" class="text-center no-space-three">Actions</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="approveModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-success">Approved Remark</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="approveForm">
+                <div class="modal-body">
+                    <input id="approveChemicalId" name="id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow btn-loading">Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-success">Rejected Remark</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rejectForm">
+                <div class="modal-body">
+                    <input id="rejectChemicalId" name="id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger shadow btn-loading">Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
+    <script src="~/vendor/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+    <script>
+        function statusFormatter(value, row, index) {
+            let statusHtml;
+            if (value === null) {
+                statusHtml = '<span class="badge rounded-pill text-bg-secondary" style="line-height: 1; vertical-align: middle;">Waiting for Approval</span>';
+            } else if (value === true) {
+                statusHtml = '<span class="badge rounded-pill text-bg-success" style="line-height: 1; vertical-align: middle;">Approved</span>';
+            } else {
+                statusHtml = '<span class="badge rounded-pill text-bg-danger" style="line-height: 1; vertical-align: middle;">Rejected</span>';
+            }
+            return statusHtml;
+        }
+
+        function actionFormatter(value, row, index) {
+            return [
+                '<button class="btn btn-primary btn-sm approve-btn shadow" data-bs-toggle="modal" data-bs-target="#approveModal" data-id="' + row.id + '">Approve</button>',
+                '<button class="btn btn-danger btn-sm reject-btn shadow" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="' + row.id + '">Reject</button>'
+            ].join(' ');
+        }
+
+        window.actionEvents = {
+            'click .approve-btn': function (e, value, row, index) {
+                $('#approveChemicalId').val(row.chemicalId);
+                $('#approveModal').modal('show');
+            },
+            'click .reject-btn': function (e, value, row, index) {
+                $('#rejectChemicalId').val(row.chemicalId);
+                $('#rejectModal').modal('show');
+            }
+        };
+
+        // APPROVE
+        $('#approveModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var chemicalId = button.data('id');
+            $('#approveChemicalId').val(chemicalId);
+        });
+
+        $('#approveModal').on('hide.bs.modal', function () {
+            $('#approveRemark').val('');
+            $('#sendEmailApprove').prop('checked', true);
+            var $submitButton = $('#approveForm').find('button[type="submit"]');
+            $submitButton.prop('disabled', false).text('Approve');
+        });
+
+
+        $('#approveForm').submit(function (e) {
+            e.preventDefault();
+
+            var $submitButton = $(this).find('button[type="submit"]');
+            $submitButton.prop('disabled', true).text('This may take a while...');
+
+            var chemicalId = $('#approveChemicalId').val();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            var approveButton = $(this).find('button[type="submit"]');
+
+            approveButton.prop('disabled', true);
+            $.ajax({
+                url: '@Url.Action("Approve", "ApprovalESH")',
+                type: 'POST',
+                data: { id: chemicalId, __RequestVerificationToken: token },
+                success: function (result) {
+                    $('#table').bootstrapTable('refresh');
+                    $('#approveModal').modal('hide');
+                    alert(result.message);
+                },
+                error: function () {
+                    console.log('Error approving chemical.');
+                    alert('Error approving chemical.');
+                },
+                complete: function () {
+                    approveButton.prop('disabled', false);
+                }
+            });
+        });
+
+        // REJECT
+        $('#rejectModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var chemicalId = button.data('id');
+            $('#rejectChemicalId').val(chemicalId);
+        });
+        $('#rejectForm').submit(function (e) {
+            e.preventDefault();
+            var chemicalId = $('#rejectChemicalId').val();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            var rejectButton = $(this).find('button[type="submit"]');
+
+            rejectButton.prop('disabled', true);
+            $.ajax({
+                url: '@Url.Action("Reject", "Chemical_FALab")',
+                type: 'POST',
+                data: { id: chemicalId, __RequestVerificationToken: token },
+                success: function (result) {
+                    $('#table').bootstrapTable('refresh');
+                    $('#rejectModal').modal('hide');
+                    alert(result.message);
+                },
+                error: function () {
+                    console.log('Error approving chemical.');
+                    alert('Error approving chemical.');
+                },
+                complete: function () {
+                    rejectButton.prop('disabled', false);
+                }
+            });
+        });
+
+    </script>
+}
