@@ -9,13 +9,7 @@
         <div class="card-header">biji utama</div>
         <hr class="m-0" />
         <div class="card-body">
-
-            <div>
-                <a class="btn btn-primary " asp-action="Create">
-                    Add New Chemical
-                </a>
-            </div>
-
+            <a class="btn btn-primary " asp-action="Create">Add New Chemical</a>
             <table id="table"
                    data-toggle="table"
                    data-locale="en-US"
@@ -76,12 +70,10 @@
 
         function viewFormatter(value, row, index) {
             return `
-                                                        <a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-primary btn-sm shadow">Add</a>
-
-                                                        <a href="@Url.Action("Edit", "Chemical_FALab")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-
-                                                        <a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>
-                                                    `;
+                    <a href="@Url.Action("Index", "Records_FALab")?id=${row.id}" class="btn btn-primary btn-sm shadow">Index</a>
+                    <a href="@Url.Action("Edit", "Chemical_FALab")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
+                    <a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>
+                  `;
         }
     </script>
 }

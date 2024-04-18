@@ -1,0 +1,67 @@
+﻿@model ChemicalProject.Models.Records_FALab
+
+@{
+    ViewData["Title"] = "Create";
+    var chemicalId = ViewData["chemicalId"] as int?;
+    var chemicalName = ViewData["ChemicalName"] as string;
+}
+
+<h1>Create Record for Chemical @chemicalId</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <input asp-for="ChemicalId" />
+            <div class="form-group">
+                <label asp-for="Badge" class="control-label"></label>
+                <input asp-for="Badge" class="form-control" />
+                <span asp-validation-for="Badge" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceivedQuantity" class="control-label"></label>
+                <input asp-for="ReceivedQuantity" class="form-control" />
+                <span asp-validation-for="ReceivedQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Consumption" class="control-label"></label>
+                <input asp-for="Consumption" class="form-control" />
+                <span asp-validation-for="Consumption" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Justify" class="control-label"></label>
+                <input asp-for="Justify" class="form-control" />
+                <span asp-validation-for="Justify" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecordDate" class="control-label"></label>
+                <input asp-for="RecordDate" class="form-control" />
+                <span asp-validation-for="RecordDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RequestDate" class="control-label"></label>
+                <input asp-for="RequestDate" class="form-control" />
+                <span asp-validation-for="RequestDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpiredDate" class="control-label"></label>
+                <input asp-for="ExpiredDate" class="form-control" />
+                <span asp-validation-for="ExpiredDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

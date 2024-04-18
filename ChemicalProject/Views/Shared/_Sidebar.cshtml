@@ -1,4 +1,8 @@
-﻿<nav id="sidebar" class="sidebar-wrapper">
+﻿@{
+	var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<nav id="sidebar" class="sidebar-wrapper">
 
 	<!-- Sidebar brand start  -->
 	<div class="w-100 d-flex">
@@ -6,7 +10,7 @@
 			<img src="~/img/LOGO.png" width="auto" height="24" alt="Website Logo" class="d-block mx-auto">
 		</a>
 	</div>
-	<hr style="margin-top:1rem;margin-bottom:0;"> <!-- Sidebar brand end  -->
+	<hr style="margin-top:1rem;margin-bottom:0;"> <!-- Sidebar brand end -->
 	<!-- Sidebar content start -->
 	<div class="sidebar-content">
 
@@ -15,35 +19,35 @@
 			<ul>
 				<!-- user menu -->
 				<li class="header-menu">USER</li>
-				<li>
+				<li class="@(currentController == "Home" ? "active-page-link" : "")">
 					<a asp-controller="Home" asp-action="Index">
-						<i class="icon-message-circle"></i>
+						<i class="icon-home2"></i>
 						<span class="menu-text">Dashboard</span>
 					</a>
 				</li>
-				<li>
+				<li class="@(currentController == "Chemical_FALab" ? "active-page-link" : "")">
 					<a asp-controller="Chemical_FALab" asp-action="Index">
-						<i class="icon-message-circle"></i>
+						<i class="icon-database"></i>
 						<span class="menu-text">Chemical FA LAB</span>
 					</a>
 				</li>
 				
 				<!-- admin menu -->
 				<li class="header-menu">ADMIN</li>
-				<li class="sidebar-dropdown">
+				<li class="@(currentController == "ApprovalManager" || currentController == "ApprovalESH" ? "active sidebar-dropdown" : "sidebar-dropdown")">
 					<a href="#">
-						<i class="icon-devices_other"></i>
+						<i class="icon-done_all"></i>
 						<span class="menu-text">Request List</span>
 					</a>
 					<div class="sidebar-submenu">
 						<ul>
 							<li>
-								<a asp-controller="ApprovalManager" asp-action="Index">
+								<a asp-controller="ApprovalManager" asp-action="Index" class="@(currentController == "ApprovalManager" ? "current-page" : "")">
 									<span class="menu-text">Approval Manager</span>
 								</a>
 							</li>
 							<li>
-								<a asp-controller="ApprovalESH" asp-action="Index">
+								<a asp-controller="ApprovalESH" asp-action="Index" class="@(currentController == "ApprovalESH" ? "current-page" : "")">
 									<span class="menu-text">Approval ESH</span>
 								</a>
 							</li>

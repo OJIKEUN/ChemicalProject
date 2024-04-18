@@ -11,5 +11,6 @@ namespace ChemicalProject.Data
 		}
 
 		public DbSet<Chemical_FALab> Chemicals { get; set; }
+		public DbSet<Records_FALab> Records { get; set; }
 	}
 }

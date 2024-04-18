@@ -88,7 +88,8 @@ namespace ChemicalProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                /*chemical_FALab.RequestDate = DateTime.Now;*/
+                chemical_FALab.RequestDate = DateTime.Now;
+                
                 _context.Add(chemical_FALab);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -160,40 +161,6 @@ namespace ChemicalProject.Controllers
             return View(chemical_FALab);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Approve(int? id)
-        {
-            var chemical = await _context.Chemicals.FindAsync(id);
-
-            if (chemical == null)
-            {
-                return NotFound();
-            }
-
-            chemical.StatusManager = true;
-            _context.Update(chemical);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, message = "Chemical approved successfully!" });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Reject(int? id)
-        {
-            var chemical = await _context.Chemicals.FindAsync(id);
-
-            if (chemical == null)
-            {
-                return NotFound();
-            }
-
-            chemical.StatusManager = false;
-            _context.Update(chemical);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, message = "Chemical rejected successfully!" });
-        }
-
         // GET: Chemical_FALab/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -227,6 +194,7 @@ namespace ChemicalProject.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //-----------//
         private bool Chemical_FALabExists(int id)
         {
             return _context.Chemicals.Any(e => e.Id == id);
@@ -237,7 +205,5 @@ namespace ChemicalProject.Controllers
             var chemicalsToApprove = _context.Chemicals.Where(c => c.StatusManager == null);
             return View(chemicalsToApprove);
         }
-
-
     }
 }

@@ -56,53 +56,7 @@ namespace ChemicalProject.Controllers
             return Json(new { rows = employees });
         }
 
-
-        // POST: Chemical_FALab/Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,price,Justify")] Chemical_FALab chemical_FALab)
-        {
-            if (id != chemical_FALab.Id)
-            {
-                return NotFound();
-            }
-            var existingRecord = await _context.Chemicals.FindAsync(id);
-            if (existingRecord == null)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    existingRecord.Badge = chemical_FALab.Badge;
-                    existingRecord.ChemicalName = chemical_FALab.ChemicalName;
-                    existingRecord.Brand = chemical_FALab.Brand;
-                    existingRecord.Packaging = chemical_FALab.Packaging;
-                    existingRecord.Unit = chemical_FALab.Unit;
-                    existingRecord.Price = chemical_FALab.Price;
-                    existingRecord.Justify = chemical_FALab.Justify;
-                    _context.Update(existingRecord);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Chemical_FALabExists(existingRecord.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(chemical_FALab);
-        }
-
+        //APPROVE ADMIN
         [HttpPost]
         public async Task<IActionResult> Approve(int? id)
         {
@@ -117,9 +71,10 @@ namespace ChemicalProject.Controllers
             _context.Update(chemical);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "Chemical approved successfully!" });
+            return Json(new { success = true, message = "Chemical approved successfully!!!!" });
         }
 
+        //REJECT ADMIN
         [HttpPost]
         public async Task<IActionResult> Reject(int? id)
         {
@@ -134,7 +89,7 @@ namespace ChemicalProject.Controllers
             _context.Update(chemical);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "Chemical rejected successfully!" });
+            return Json(new { success = true, message = "Chemical rejected successfully!!!!" });
         }
 
         private bool Chemical_FALabExists(int id)

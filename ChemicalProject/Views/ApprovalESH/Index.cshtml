@@ -180,7 +180,7 @@
 
             rejectButton.prop('disabled', true);
             $.ajax({
-                url: '@Url.Action("Reject", "Chemical_FALab")',
+                url: '@Url.Action("Reject", "ApprovalESH")',
                 type: 'POST',
                 data: { id: chemicalId, __RequestVerificationToken: token },
                 success: function (result) {
