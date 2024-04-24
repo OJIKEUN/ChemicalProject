@@ -19,41 +19,78 @@ namespace ChemicalProject.Controllers
             _context = context;
         }
 
+
         public IActionResult Index(int id)
         {
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
+            if (chemical == null)
+            {
+                return NotFound();
+            }
+
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
                 .ToList();
 
-            ViewBag.ChemicalId = id; 
-            return View(records);
+            var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
+
+            ViewBag.ChemicalId = id;
+            ViewBag.ChemicalName = chemical.ChemicalName;
+            ViewBag.CurrentStock = currentStock;
+
+            return View();
         }
+
+        [HttpGet]
+        public IActionResult GetData(int id)
+        {
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
+            var records = _context.Records
+                .Where(r => r.ChemicalId == id)
+                .Include(r => r.Chemical_FALab)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    badge = r.Badge,
+                    chemicalName = r.Chemical_FALab.ChemicalName,
+                    receivedQuantity = r.ReceivedQuantity,
+                    consumption = r.Consumption,
+                    justify = r.Justify,
+                    recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy") : null,
+                    receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy") : null,
+                    expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MM yyyy") : null
+                })
+                .ToList();
+
+            return Json(new { rows = records });
+        }
+
 
         //GET CREATE
         public IActionResult Create(int id)
         {
             var record = new Records_FALab
             {
-                ChemicalId = id 
+                ChemicalId = id
             };
 
-            ViewBag.ChemicalId = id; 
+            ViewBag.ChemicalId = id;
             return View(record);
         }
 
         //POST CREATE
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,RequestDate,ExpiredDate")] Records_FALab records)
+        public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
             if (ModelState.IsValid)
             {
-                records.ChemicalId = chemicalId; 
-                records.Badge = 123; 
-                records.RecordDate = DateTime.Now; 
-                records.RequestDate = DateTime.Now; 
-                records.ExpiredDate = DateTime.Now.AddMonths(6); 
+                records.ChemicalId = chemicalId;
+                records.Badge = 123;
+                records.RecordDate = DateTime.Now;
+                records.ReceivedDate = DateTime.Now;
+                records.ExpiredDate = DateTime.Now.AddMonths(6);
 
                 _context.Add(records);
                 _context.SaveChanges();
@@ -71,19 +108,23 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var records_FALab = await _context.Records.FindAsync(id);
+            var records_FALab = await _context.Records
+                .Include(r => r.Chemical_FALab)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
             if (records_FALab == null)
             {
                 return NotFound();
             }
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "Id", records_FALab.ChemicalId);
+
+            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records_FALab.ChemicalId);
             return View(records_FALab);
         }
 
         // POST: Records_FALab/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Badge,ReceivedQuantity,Consumption,Justify,RecordDate,RequestDate,ExpiredDate")] Records_FALab records_FALab)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records_FALab)
         {
             if (id != records_FALab.Id)
             {
@@ -108,9 +149,22 @@ namespace ChemicalProject.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index), new { chemicalId = records_FALab.ChemicalId });
+
+                // Mendapatkan data Chemical_FALab berdasarkan ChemicalId yang diedit
+                var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
+                if (chemical == null)
+                {
+                    return NotFound();
+                }
+
+                // Menyimpan informasi ChemicalId dan ChemicalName ke ViewBag
+                ViewBag.ChemicalId = records_FALab.ChemicalId;
+                ViewBag.ChemicalName = chemical.ChemicalName;
+
+                return RedirectToAction(nameof(Index), new { id = records_FALab.ChemicalId });
             }
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "Id", records_FALab.ChemicalId);
+
+            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records_FALab.ChemicalId);
             return View(records_FALab);
         }
 

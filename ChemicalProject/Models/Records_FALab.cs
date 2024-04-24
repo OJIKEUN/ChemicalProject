@@ -16,8 +16,11 @@ namespace ChemicalProject.Models
         public int ReceivedQuantity { get; set; }
         public int Consumption { get; set; }
         public string Justify { get; set; }
+
+        [NotMapped]
+        public int CurrentStock { get; set; }
+        public DateTime? ReceivedDate { get; set; }
         public DateTime? RecordDate { get; set; }
-        public DateTime? RequestDate { get; set; }
         public DateTime? ExpiredDate { get; set; }
 
     }

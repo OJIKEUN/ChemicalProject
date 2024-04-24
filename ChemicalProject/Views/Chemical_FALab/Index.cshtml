@@ -1,15 +1,19 @@
 ﻿@{
-    ViewData["Title"] = "ESH Appoval";
+    ViewData["Title"] = "Chemical FALAB";
 }
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
 
 <div class="row gutters mt-4">
     <div class="card">
-        <div class="card-header">biji utama</div>
+        <div class="card-header">Chemical FA LAB</div>
         <hr class="m-0" />
         <div class="card-body">
-            <a class="btn btn-primary " asp-action="Create">Add New Chemical</a>
+            <div id="toolbar">
+                <div class="btn-group me-2">
+                    <a class="btn btn-primary " asp-action="Create">Add New Chemical</a>
+                </div>
+            </div>
             <table id="table"
                    data-toggle="table"
                    data-locale="en-US"

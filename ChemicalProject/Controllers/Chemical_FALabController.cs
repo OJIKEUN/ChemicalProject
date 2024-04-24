@@ -31,7 +31,7 @@ namespace ChemicalProject.Controllers
         [HttpGet]
         public IActionResult GetData()
         {
-            var employees = _context.Chemicals
+            var Chemicals = _context.Chemicals
                 .Select(g => new
                 {
                     id = g.Id,
@@ -52,7 +52,7 @@ namespace ChemicalProject.Controllers
                     approvalDateESH = g.ApprovalDateESH.HasValue ? g.ApprovalDateESH.Value.ToString("dd MMM yyyy") : null,
                 }).ToList();
 
-            return Json(new { rows = employees });
+            return Json(new { rows = Chemicals });
         }
 
         // GET: Chemical_FALab/Details/5
