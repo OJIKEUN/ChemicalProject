@@ -18,6 +18,8 @@
     <PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="sweetalert" Version="1.0.0" />
+    <PackageReference Include="sweetalert2" Version="1.0.1" />
     <PackageReference Include="System.DirectoryServices.AccountManagement" Version="8.0.0" />
   </ItemGroup>
 
@@ -28,6 +30,38 @@
     <None Include="wwwroot\img\cards\.DS_Store" />
     <None Include="wwwroot\img\docs\.DS_Store" />
     <None Include="wwwroot\js\.DS_Store" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\.nupkg.metadata" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\.signature.p7s" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\buildMultiTargeting\SweetAlert2.props" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\buildTransitive\SweetAlert2.props" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\build\Microsoft.AspNetCore.StaticWebAssets.props" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\build\SweetAlert2.props" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\lib\net6.0\SweetAlert2.dll" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\lib\net7.0\SweetAlert2.dll" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\lib\net8.0\SweetAlert2.dll" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\lib\netstandard2.0\SweetAlert2.dll" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\README.md" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\bootstrap4Theme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\bootstrap4Theme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\borderlessTheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\borderlessTheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\bulmaTheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\bulmaTheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\darkTheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\darkTheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\defaultTheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\defaultTheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\materialUITheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\materialUITheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\minimalTheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\minimalTheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\sweetAlert2.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\sweetAlert2.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\wordpressAdminTheme.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\staticwebassets\wordpressAdminTheme.min.js" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\sweetalert2.1.0.1.nupkg" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\sweetalert2.1.0.1.nupkg.sha512" />
+    <None Include="wwwroot\lib\sweetalert2\1.0.1\sweetalert2.nuspec" />
     <None Include="wwwroot\vendor\.DS_Store" />
     <None Include="wwwroot\vendor\apex\.DS_Store" />
     <None Include="wwwroot\vendor\apex\crm\.DS_Store" />

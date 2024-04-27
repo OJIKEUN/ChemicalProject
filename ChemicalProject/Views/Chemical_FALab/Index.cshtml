@@ -65,7 +65,7 @@
             if (value === null) {
                 statusHtml = '<span class="badge rounded-pill text-bg-secondary" style="line-height: 1; vertical-align: middle;">Waiting for Approval</span>';
             } else if (value === true) {
-                statusHtml = '<span class="badge rounded-pill text-bg-success" style="line-height: 1; vertical-align: middle;">Approved</span>';
+                statusHtml = '<span class="badge  text-bg-success" style="line-height: 1; vertical-align: middle;" >Approved</span>';
             } else {
                 statusHtml = '<span class="badge rounded-pill text-bg-danger" style="line-height: 1; vertical-align: middle;">Rejected</span>';
             }
@@ -79,5 +79,14 @@
                     <a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>
                   `;
         }
+
+        $(function () {
+            var notyf = new Notyf();
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            @:notyf.success('@TempData["SuccessMessage"]');
+        }
+                })
     </script>
 }

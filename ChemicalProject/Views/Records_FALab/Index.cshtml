@@ -1,4 +1,8 @@
-﻿<link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+﻿@{
+    ViewData["Title"] = "Record FALAB";
+}
+
+<link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
 
 <div class="row gutters mt-4">
@@ -30,8 +34,6 @@
                    data-url="@Url.Action("GetData", "Records_FALab")?id=@ViewBag.ChemicalId"
                    data-pagination="true"
                    data-page-size="25">
-
-
                 <thead>
                     <tr>
                         <th data-field="id" data-sortable="true">ID</th>
@@ -39,6 +41,7 @@
                         <th data-field="badge" data-sortable="true">Badge</th>
                         <th data-field="receivedQuantity" data-sortable="true">Received Quantity</th>
                         <th data-field="consumption" data-sortable="true">Consumption</th>
+                        <th data-field="currentStock" data-sortable="true">Current Stock</th>
                         <th data-field="justify" data-sortable="true">Justify</th>
                         <th data-field="recordDate" data-sortable="true">Record Date</th>
                         <th data-field="receivedDate" data-sortable="true">Received Date</th>
@@ -51,6 +54,7 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
@@ -58,143 +62,61 @@
     <script>
         function viewFormatter(value, row, index) {
             return `
-                        <a href="@Url.Action("Edit", "Records_FALab")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                        <a href="@Url.Action("Delete", "Records_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>
-                    `;
+                                <a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
+                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>
+                            `;
         }
+
+        function confirmDelete(id, chemicalId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteRecord(id, chemicalId);
+                }
+            });
+        }
+
+        function deleteRecord(id, chemicalId) {
+            $.ajax({
+                url: '@Url.Action("DeleteConfirmed", "Records_FALab")',
+                type: 'POST',
+                data: { id: id, chemicalId: chemicalId },
+                success: function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        Swal.fire("Deleted!", "Your record has been deleted.", "success");
+                    } else {
+                        Swal.fire("Error!", "Failed to delete the record.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while deleting the record.", "error");
+                }
+            });
+        }
+
+        $(function () {
+        @if (TempData["SuccessMessage"] != null)
+        {
+            @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
+        }
+                });
+
+        $(function () {
+            var notyf = new Notyf();
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                @:notyf.success('@TempData["SuccessMessage"]');
+            }
+        })
+
     </script>
 }
-
-
-
-
-
-
-
-
-
-
-@* @model IEnumerable<ChemicalProject.Models.Records_FALab>
-
-
-    @{
-    ViewData["Title"] = "Records";
-    var chemicalName = ViewBag.ChemicalName;
-    var currentStock = ViewBag.CurrentStock;
-    }
-
-    <h1>Records for @chemicalName</h1>
-    <p>Current Stock: @currentStock</p>
-
-    <div class="d-flex justify-content-end">
-    <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
-    </div>
-
-    <table class="table">
-    <thead>
-    <tr>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().Chemical_FALab.Id)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().Badge)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().ReceivedQuantity)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().Consumption)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().Justify)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().RecordDate)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().ReceivedDate)
-
-    </th>
-    <th>
-
-    @Html.DisplayNameFor(model => model.First().ExpiredDate)
-
-    </th>
-    <th></th>
-    </tr>
-    </thead>
-    <tbody>
-
-    @foreach (var item in Model)
-
-    {
-
-    <tr>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.Chemical_FALab.Id)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.Badge)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.ReceivedQuantity)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.Consumption)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.Justify)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.RecordDate)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.ReceivedDate)
-
-    </td>
-    <td>
-
-    @Html.DisplayFor(modelItem => item.ExpiredDate)
-
-    </td>
-    <td>
-
-    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-
-    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-
-    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-
-    </td>
-    </tr>
-
-    }
-
-    </tbody>
-    </table> *@

@@ -5,6 +5,14 @@
     {
       "library": "bootstrap-icons@1.11.3",
       "destination": "wwwroot/lib/bootstrap-icons/"
+    },
+    {
+      "library": "sweetalert2@11.10.8",
+      "destination": "wwwroot/vendor/sweetalert2/"
+    },
+    {
+      "library": "notyf@3.10.0",
+      "destination": "wwwroot/notyf/"
     }
   ]
 }

@@ -19,7 +19,6 @@ namespace ChemicalProject.Controllers
             _context = context;
         }
 
-
         public IActionResult Index(int id)
         {
             var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
@@ -49,51 +48,72 @@ namespace ChemicalProject.Controllers
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .Select(r => new
+                .OrderBy(r => r.Id) // Mengurutkan berdasarkan Id untuk menjaga urutan kronologis
+                .ToList();
+
+            int currentStock = 0; // Inisialisasi nilai stok saat ini
+            var data = records
+                .Select((r, index) =>
                 {
-                    id = r.Id,
-                    badge = r.Badge,
-                    chemicalName = r.Chemical_FALab.ChemicalName,
-                    receivedQuantity = r.ReceivedQuantity,
-                    consumption = r.Consumption,
-                    justify = r.Justify,
-                    recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy") : null,
-                    receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy") : null,
-                    expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MM yyyy") : null
+                    // Kalkulasi stok saat ini secara kumulatif
+                    currentStock += r.ReceivedQuantity - r.Consumption;
+
+                    return new
+                    {
+                        id = r.Id,
+                        badge = r.Badge,
+                        chemicalName = r.Chemical_FALab.ChemicalName,
+                        receivedQuantity = r.ReceivedQuantity,
+                        consumption = r.Consumption,
+                        currentStock = currentStock, // Menggunakan nilai stok saat ini yang telah dikalkulasi
+                        justify = r.Justify,
+                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy") : null,
+                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy") : null,
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy") : null
+                    };
                 })
                 .ToList();
 
-            return Json(new { rows = records });
+            return Json(new { rows = data });
         }
 
-
-        //GET CREATE
+        // GET: Records_FALab/Create/5
         public IActionResult Create(int id)
         {
-            var record = new Records_FALab
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
+
+            if (chemical == null)
+            {
+                return NotFound();
+            }
+
+            var records = new Records_FALab
             {
                 ChemicalId = id
             };
 
             ViewBag.ChemicalId = id;
-            return View(record);
+            ViewBag.ChemicalName = chemical.ChemicalName;
+
+            return View(records);
         }
 
-        //POST CREATE
+        // POST: Records_FALab/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
+
             if (ModelState.IsValid)
             {
                 records.ChemicalId = chemicalId;
-                records.Badge = 123;
                 records.RecordDate = DateTime.Now;
                 records.ReceivedDate = DateTime.Now;
                 records.ExpiredDate = DateTime.Now.AddMonths(6);
 
                 _context.Add(records);
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Record has been created successfully.";
                 return RedirectToAction(nameof(Index), new { id = chemicalId });
             }
 
@@ -108,17 +128,17 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var records_FALab = await _context.Records
+            var records = await _context.Records
                 .Include(r => r.Chemical_FALab)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (records_FALab == null)
+            if (records == null)
             {
                 return NotFound();
             }
 
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records_FALab.ChemicalId);
-            return View(records_FALab);
+            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records.ChemicalId);
+            return View(records);
         }
 
         // POST: Records_FALab/Edit/5
@@ -137,6 +157,7 @@ namespace ChemicalProject.Controllers
                 {
                     _context.Update(records_FALab);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Record has been updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -168,43 +189,24 @@ namespace ChemicalProject.Controllers
             return View(records_FALab);
         }
 
-        // GET: Records_FALab/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        private bool Records_FALabExists(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var records_FALab = await _context.Records
-                .Include(r => r.Chemical_FALab)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (records_FALab == null)
-            {
-                return NotFound();
-            }
-
-            return View(records_FALab);
+            return _context.Records.Any(e => e.Id == id);
         }
 
-        // POST: Records_FALab/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // POST: Records_FALab/DeleteConfirmed/5
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed(int id, int chemicalId)
         {
             var records_FALab = await _context.Records.FindAsync(id);
             if (records_FALab != null)
             {
                 _context.Records.Remove(records_FALab);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true }); // Mengembalikan objek JSON dengan success = true
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { chemicalId = records_FALab.ChemicalId });
-        }
-
-        private bool Records_FALabExists(int id)
-        {
-            return _context.Records.Any(e => e.Id == id);
+            return Json(new { success = false }); // Mengembalikan objek JSON dengan success = false jika record tidak ditemukan
         }
     }
 }

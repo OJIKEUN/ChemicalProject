@@ -25,7 +25,6 @@ namespace ChemicalProject.Controllers
         {
             return View();
         }
-
         // untuk dapet data di table
         //API ENDPOINT
         [HttpGet]
@@ -92,6 +91,7 @@ namespace ChemicalProject.Controllers
                 
                 _context.Add(chemical_FALab);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Record has been created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(chemical_FALab);
@@ -142,6 +142,7 @@ namespace ChemicalProject.Controllers
                     existingRecord.Justify = chemical_FALab.Justify;
                     existingRecord.RequestDate = chemical_FALab.RequestDate;
                     _context.Update(existingRecord);
+                    TempData["SuccessMessage"] = "Record has been created successfully.";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
