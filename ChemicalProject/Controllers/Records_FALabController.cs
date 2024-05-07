@@ -21,8 +21,8 @@ namespace ChemicalProject.Controllers
 
         public IActionResult Index(int id)
         {
-            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
-            if (chemical == null)
+            var chemicals = _context.Chemicals.FirstOrDefault(c => c.Id == id);
+            if (chemicals == null)
             {
                 return NotFound();
             }
@@ -35,7 +35,7 @@ namespace ChemicalProject.Controllers
             var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
 
             ViewBag.ChemicalId = id;
-            ViewBag.ChemicalName = chemical.ChemicalName;
+            ViewBag.ChemicalName = chemicals.ChemicalName;
             ViewBag.CurrentStock = currentStock;
 
             return View();
@@ -48,14 +48,13 @@ namespace ChemicalProject.Controllers
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .OrderBy(r => r.Id) // Mengurutkan berdasarkan Id untuk menjaga urutan kronologis
+                .OrderBy(r => r.Id) 
                 .ToList();
 
-            int currentStock = 0; // Inisialisasi nilai stok saat ini
+            int currentStock = 0; 
             var data = records
                 .Select((r, index) =>
                 {
-                    // Kalkulasi stok saat ini secara kumulatif
                     currentStock += r.ReceivedQuantity - r.Consumption;
 
                     return new
@@ -65,11 +64,11 @@ namespace ChemicalProject.Controllers
                         chemicalName = r.Chemical_FALab.ChemicalName,
                         receivedQuantity = r.ReceivedQuantity,
                         consumption = r.Consumption,
-                        currentStock = currentStock, // Menggunakan nilai stok saat ini yang telah dikalkulasi
+                        currentStock = currentStock, 
                         justify = r.Justify,
-                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy") : null,
-                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy") : null,
-                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy") : null
+                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null
                     };
                 })
                 .ToList();

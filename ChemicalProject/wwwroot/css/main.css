@@ -7177,3 +7177,20 @@ div .stats-detail a:hover {
 
 
 
+.success-popover {
+    --bs-popover-max-width: 200px;
+    --bs-popover-border-color: #05a34a;
+    --bs-popover-header-bg: #05a34a;
+    --bs-popover-header-color: #fff;
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+}
+
+.danger-popover {
+    --bs-popover-max-width: 200px;
+    --bs-popover-border-color: #e40000;
+    --bs-popover-header-bg: #e40000;
+    --bs-popover-header-color: #fff;
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+}

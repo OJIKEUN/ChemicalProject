@@ -7,17 +7,38 @@
             <i class="icon-menu1"></i>
         </a>
     </div>
-    <div class="header-items">
+    <div class="header-items d-flex">
+        <!-- Keterangan waktu -->
+        <div>
+            <span id="date"></span>
+            <span id="clock"></span>
+        </div>
+
         <!-- Custom search end -->
         <!-- Header actions start -->
-        <ul class="header-actions">
+        <ul class="header-actions ms-auto d-flex align-items-center">
             <li class="dropdown">
-            <li class="dropdown">
-                <a style="padding-top:1rem;padding-bottom:1rem;" id="userSettings" class="user-settings" data-bs-toggle="dropdown" aria-haspopup="true">
-                    <span class=""> Hello, @User.Identity?.Name</span>
-                </a>
+                <div class="d-flex align-items-center">
+                    <a style="padding-top:1rem;padding-bottom:1rem;" id="userSettings" class="user-settings ms-3" data-bs-toggle="dropdown" aria-haspopup="true">
+                        <span class=""> Hello, @User.Identity?.Name</span>
+                    </a>
+                </div>
             </li>
         </ul>
         <!-- Header actions end -->
     </div>
 </header>
+
+<script>
+    function updateDateTime() {
+        var currentDate = new Date();
+        var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+        var dateString = currentDate.toLocaleDateString('en-US', options) + ' ';
+        var timeString = ' ' + currentDate.toLocaleTimeString();
+
+        document.getElementById('date').textContent = dateString;
+        document.getElementById('clock').textContent = timeString;
+    }
+
+    setInterval(updateDateTime, 1000);
+</script>

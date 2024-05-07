@@ -4,6 +4,7 @@ using ChemicalProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChemicalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240505125422_AddWasteTable")]
+    partial class AddWasteTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,34 +127,6 @@ namespace ChemicalProject.Migrations
                     b.ToTable("Records");
                 });
 
-            modelBuilder.Entity("ChemicalProject.Models.Waste_FALab", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("RecordId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("WasteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("WasteQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WasteType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecordId");
-
-                    b.ToTable("Wastes");
-                });
-
             modelBuilder.Entity("ChemicalProject.Models.Records_FALab", b =>
                 {
                     b.HasOne("ChemicalProject.Models.Chemical_FALab", "Chemical_FALab")
@@ -161,17 +136,6 @@ namespace ChemicalProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Chemical_FALab");
-                });
-
-            modelBuilder.Entity("ChemicalProject.Models.Waste_FALab", b =>
-                {
-                    b.HasOne("ChemicalProject.Models.Records_FALab", "Records")
-                        .WithMany()
-                        .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Records");
                 });
 #pragma warning restore 612, 618
         }

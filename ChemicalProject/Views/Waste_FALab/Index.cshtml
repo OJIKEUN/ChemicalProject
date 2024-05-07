@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Record FALAB";
+    ViewData["Title"] = "Waste_FALab";
 }
 
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
@@ -8,17 +8,17 @@
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Chemical_FALab")">Chemical FALAB</a></li>
-    <li class="breadcrumb-item active">Records FALAB</li>
+    <li class="breadcrumb-item active">Waste FALAB</li>
 </ol>
 
 <div class="row gutters">
     <div class="card">
         <ul class="nav nav-pills nav-fill">
             <li class="nav-item">
-                <a class="nav-link active" href="#">Record</a>
+                <a class="nav-link" asp-controller="Records_FALab" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Record</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Waste_FALab" asp-action="Index" asp-route-chemicalId="@ViewBag.ChemicalId">Waste</a>
+                <a class="nav-link active" href="#">Waste</a>
             </li>
         </ul>
     </div>
@@ -27,8 +27,7 @@
 <div class="row gutters">
     <div class="card">
         <div class="mt-3"></div>
-        <h2>Records for @ViewBag.ChemicalName</h2>
-        <p>Current Stock: @ViewBag.CurrentStock</p>
+        <h2>Waste for @ViewBag.ChemicalName</h2>
         <hr class="m-0" />
         <div class="card-body">
             <div id="toolbar">
@@ -50,7 +49,7 @@
                    data-show-columns="true"
                    data-buttons="[]"
                    data-key-events="true"
-                   data-url="@Url.Action("GetData", "Records_FALab")?id=@ViewBag.ChemicalId"
+                   data-url="@Url.Action("GetData", "Waste_FALab")?id=@ViewBag.ChemicalId"
                    data-pagination="true"
                    data-show-export="true"
                    data-export-types="['sql', 'excel', 'pdf']"
@@ -58,16 +57,12 @@
 
                 <thead>
                     <tr>
-                        <th data-field="id" data-sortable="true">ID</th>
+                        <th data-field="idRecord" data-sortable="true">ID Record</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
-                        <th data-field="badge" data-sortable="true">Badge</th>
-                        <th data-field="receivedQuantity" data-sortable="true">Received Quantity</th>
                         <th data-field="consumption" data-sortable="true">Consumption</th>
-                        <th data-field="currentStock" data-sortable="true">Current Stock</th>
-                        <th data-field="justify" data-sortable="true">Justify</th>
-                        <th data-field="recordDate" data-sortable="true">Record Date</th>
-                        <th data-field="receivedDate" data-sortable="true">Received Date</th>
-                        <th data-field="expiredDate" data-sortable="true">Expired Date</th>
+                        <th data-field="wasteType" data-sortable="true">Waste Type</th>
+                        <th data-field="wasteQuantity" data-sortable="true">Waste Quantity</th>
+                        <th data-field="wasteDate" data-sortable="true">Waste Date</th>
                         <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="100" data-width="180">Actions</th>
                     </tr>
                 </thead>
@@ -87,9 +82,9 @@
     <script>
         function viewFormatter(value, row, index) {
             return `
-                                                <a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>
-                                            `;
+                                                                <a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
+                                                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>
+                                                            `;
         }
 
         function confirmDelete(id, chemicalId) {
@@ -132,7 +127,7 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                                });
+                                                });
 
         $(function () {
             var notyf = new Notyf();
@@ -141,7 +136,7 @@
         {
             @:notyf.success('@TempData["SuccessMessage"]');
         }
-                        })
+                                        })
 
 
     </script>

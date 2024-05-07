@@ -31,24 +31,24 @@ namespace ChemicalProject.Controllers
         public IActionResult GetData()
         {
             var Chemicals = _context.Chemicals
-                .Select(g => new
+                .Select(c => new
                 {
-                    id = g.Id,
-                    badge = g.Badge,
-                    chemicalName = g.ChemicalName,
-                    brand = g.Brand,
-                    packaging = g.Packaging,
-                    unit = g.Unit,
-                    minimumStock = g.MinimumStock,
-                    price = g.Price,
-                    justify = g.Justify,
-                    requestDate = g.RequestDate.HasValue ? g.RequestDate.Value.ToString("dd MMM yyyy") : null,
-                    statusManager = g.StatusManager,
-                    remarkManager = g.RemarkManager,
-                    approvalDateManager = g.ApprovalDateManager.HasValue ? g.ApprovalDateManager.Value.ToString("dd MMM yyyy") : null,
-                    statusESH = g.StatusESH,
-                    remarkESH = g.RemarkESH,
-                    approvalDateESH = g.ApprovalDateESH.HasValue ? g.ApprovalDateESH.Value.ToString("dd MMM yyyy") : null,
+                    id = c.Id,
+                    badge = c.Badge,
+                    chemicalName = c.ChemicalName,
+                    brand = c.Brand,
+                    packaging = c.Packaging,
+                    unit = c.Unit,
+                    minimumStock = c.MinimumStock,
+                    price = c.Price,
+                    justify = c.Justify,
+                    requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                    statusManager = c.StatusManager,
+                    remarkManager = c.RemarkManager,
+                    approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
+                    statusESH = c.StatusESH,
+                    remarkESH = c.RemarkESH,
+                    approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
                 }).ToList();
 
             return Json(new { rows = Chemicals });
@@ -91,7 +91,7 @@ namespace ChemicalProject.Controllers
                 
                 _context.Add(chemical_FALab);
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Record has been created successfully.";
+                TempData["SuccessMessage"] = "Chemical has been created successfully.";
                 return RedirectToAction(nameof(Index));
             }
             return View(chemical_FALab);
@@ -142,7 +142,7 @@ namespace ChemicalProject.Controllers
                     existingRecord.Justify = chemical_FALab.Justify;
                     existingRecord.RequestDate = chemical_FALab.RequestDate;
                     _context.Update(existingRecord);
-                    TempData["SuccessMessage"] = "Record has been created successfully.";
+                    TempData["SuccessMessage"] = "Chemical has been edited successfully.";
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -189,9 +189,10 @@ namespace ChemicalProject.Controllers
             if (chemical_FALab != null)
             {
                 _context.Chemicals.Remove(chemical_FALab);
+                TempData["SuccessMessage"] = "Chemical has been deleted successfully.";
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
