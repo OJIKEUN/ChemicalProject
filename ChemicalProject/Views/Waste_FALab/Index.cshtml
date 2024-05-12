@@ -30,11 +30,6 @@
         <h2>Waste for @ViewBag.ChemicalName</h2>
         <hr class="m-0" />
         <div class="card-body">
-            <div id="toolbar">
-                <div class="btn-group me-2">
-                    <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
-                </div>
-            </div>
             <table id="table"
                    data-toggle="table"
                    data-locale="en-US"
@@ -63,11 +58,46 @@
                         <th data-field="wasteType" data-sortable="true">Waste Type</th>
                         <th data-field="wasteQuantity" data-sortable="true">Waste Quantity</th>
                         <th data-field="wasteDate" data-sortable="true">Waste Date</th>
-                        <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="100" data-width="180">Actions</th>
+                        <th data-formatter="actionFormatter" class="text-center no-space-three" data-width="150">Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add Waste -->
+<div class="modal fade" id="addWasteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Add Waste</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addWasteForm">
+                <div class="modal-body">
+                    <input type="hidden" id="idRecord" name="idRecord" />
+                    <input type="hidden" id="chemicalName" name="chemicalName" />
+                    <input type="hidden" id="consumption" name="consumption" />
+                    <div class="mb-3">
+                        <label for="wasteType" class="form-label">Waste Type</label>
+                        <input type="text" class="form-control" id="wasteType" name="wasteType" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="wasteQuantity" class="form-label">Waste Quantity</label>
+                        <input type="number" class="form-control" id="wasteQuantity" name="wasteQuantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="wasteDate" class="form-label">Waste Date</label>
+                        <input type="date" class="form-control" id="wasteDate" name="wasteDate" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary shadow btn-loading">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -80,12 +110,54 @@
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
     <script>
-        function viewFormatter(value, row, index) {
-            return `
-                                                                <a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                                                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>
-                                                            `;
+        function actionFormatter(value, row, index) {
+            return [
+                '<button class="btn btn-primary btn-sm add-waste-btn shadow" data-bs-toggle="modal" data-bs-target="#addWasteModal" data-id="' + row.idRecord + '" data-chemicalname="' + row.chemicalName + '" data-consumption="' + row.consumption + '">Add Waste</button>',
+            ].join(' ');
         }
+
+        //FORM WASTE
+        $(document).ready(function () {
+            $('#addWasteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var idRecord = button.data('id');
+                var chemicalName = button.data('chemicalname');
+                var consumption = button.data('consumption');
+
+                $('#idRecord').val(idRecord);
+                $('#chemicalName').val(chemicalName);
+                $('#consumption').val(consumption);
+            });
+
+            $('#addWasteForm').submit(function (e) {
+                e.preventDefault();
+
+                var $submitButton = $(this).find('button[type="submit"]');
+                $submitButton.prop('disabled', true).text('Saving...');
+
+                var formData = $(this).serialize();
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                formData += '&__RequestVerificationToken=' + token;
+
+                $.ajax({
+                    url: '@Url.Action("AddWaste", "Waste_FALab")',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        $('#table').bootstrapTable('refresh');
+                        $('#addWasteModal').modal('hide');
+                        alert(result.message);
+                    },
+                    error: function () {
+                        console.log('Error adding waste.');
+                        alert('Error adding waste.');
+                    },
+                    complete: function () {
+                        $submitButton.prop('disabled', false).text('Save');
+                    }
+                });
+            });
+        });
 
         function confirmDelete(id, chemicalId) {
             Swal.fire({
@@ -127,7 +199,7 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                                                });
+                                                        });
 
         $(function () {
             var notyf = new Notyf();
@@ -136,8 +208,6 @@
         {
             @:notyf.success('@TempData["SuccessMessage"]');
         }
-                                        })
-
-
+                                                })
     </script>
 }

@@ -23,6 +23,9 @@ namespace ChemicalProject.Models
         public DateTime? RecordDate { get; set; }
         public DateTime? ExpiredDate { get; set; }
 
+        public int? WasteId { get; set; }
+        [ForeignKey("WasteId")]
+        [ValidateNever]
+        public Waste_FALab? Waste { get; set; }
     }
 }
- 

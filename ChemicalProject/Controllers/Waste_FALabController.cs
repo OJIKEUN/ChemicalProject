@@ -19,14 +19,15 @@ namespace ChemicalProject.Controllers
         {
             _context = context;
         }
+
+        // GET INDEX
         public IActionResult Index(int chemicalId)
         {
             var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == chemicalId);
             if (chemical == null)
-                if (chemical == null)
-                {
-                    return NotFound();
-                }
+            {
+                return NotFound();
+            }
 
             var records = _context.Records
                 .Where(r => r.ChemicalId == chemicalId)
@@ -45,46 +46,58 @@ namespace ChemicalProject.Controllers
         [HttpGet]
         public IActionResult GetData(int id)
         {
-            var wastes = _context.Wastes
-                .Where(w => w.Records.ChemicalId == id)
-                .Select(w => new
+            var records = _context.Records
+                .Where(r => r.ChemicalId == id)
+                .Include(r => r.Chemical_FALab)
+                .Include(r => r.Waste)
+                .Select(r => new
                 {
-                    idRecord = w.RecordId,
-                    chemicalName = w.Records.Chemical_FALab.ChemicalName,
-                    consumption = w.Records.Consumption,
-                    wasteType = w.WasteType,
-                    wasteQuantity = w.WasteQuantity,
-                    wasteDate = w.WasteDate.HasValue? w.WasteDate.Value.ToString("dd MMM yyyy HH:mm") : null
+                    id = r.Id,
+                    idRecord = r.Id,
+                    chemicalName = r.Chemical_FALab.ChemicalName,
+                    consumption = r.Consumption,
+                    wasteType = r.Waste != null ? r.Waste.WasteType : null,
+                    wasteQuantity = r.Waste != null ? r.Waste.WasteQuantity : 0,
+                    wasteDate = r.Waste != null ? r.Waste.WasteDate.HasValue ? r.Waste.WasteDate.Value.ToString("dd MMM yyyy HH:mm") : null : null
                 })
                 .ToList();
 
-            return Json(new { rows = wastes });
+            return Json(new { rows = records });
         }
 
-        public IActionResult GetData()
+        [HttpPost]
+        public IActionResult AddWaste(int idRecord, string wasteType, int wasteQuantity, DateTime wasteDate)
         {
-            var Chemicals = _context.Chemicals
-                .Select(c => new
-                {
-                    id = c.Id,
-                    badge = c.Badge,
-                    chemicalName = c.ChemicalName,
-                    brand = c.Brand,
-                    packaging = c.Packaging,
-                    unit = c.Unit,
-                    minimumStock = c.MinimumStock,
-                    price = c.Price,
-                    justify = c.Justify,
-                    requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                    statusManager = c.StatusManager,
-                    remarkManager = c.RemarkManager,
-                    approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
-                    statusESH = c.StatusESH,
-                    remarkESH = c.RemarkESH,
-                    approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
-                }).ToList();
+            var record = _context.Records.FirstOrDefault(r => r.Id == idRecord);
+            if (record == null)
+            {
+                return NotFound();
+            }
 
-            return Json(new { rows = Chemicals });
+            if (record.Waste != null)
+            {
+                // Update existing waste
+                record.Waste.WasteType = wasteType;
+                record.Waste.WasteQuantity = wasteQuantity;
+                record.Waste.WasteDate = wasteDate;
+            }
+            else
+            {
+                // Create new waste
+                var waste = new Waste_FALab
+                {
+                    WasteType = wasteType,
+                    WasteQuantity = wasteQuantity,
+                    WasteDate = wasteDate
+                };
+                record.Waste = waste;
+                _context.Wastes.Add(waste);
+            }
+
+            _context.SaveChanges();
+
+            return Json(new { success = true, message = "Waste added/updated successfully." });
         }
     }
+
 }

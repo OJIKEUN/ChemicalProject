@@ -108,7 +108,7 @@ namespace ChemicalProject.Controllers
                 records.ChemicalId = chemicalId;
                 records.RecordDate = DateTime.Now;
                 records.ReceivedDate = DateTime.Now;
-                records.ExpiredDate = DateTime.Now.AddMonths(6);
+                records.ExpiredDate = DateTime.Now.AddMonths(1);
 
                 _context.Add(records);
                 _context.SaveChanges();
