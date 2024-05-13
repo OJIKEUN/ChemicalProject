@@ -8,6 +8,7 @@ namespace ChemicalProject.Models
     {
         [Key]
         public int Id { get; set; }
+        public int Badge { get; set; }
         public string WasteType { get; set; }
         public int WasteQuantity { get; set; }
         public DateTime? WasteDate { get; set; }

@@ -43,7 +43,6 @@ namespace ChemicalProject.Controllers
             return View();
         }
 
-        [HttpGet]
         public IActionResult GetData(int id)
         {
             var records = _context.Records
@@ -56,17 +55,21 @@ namespace ChemicalProject.Controllers
                     idRecord = r.Id,
                     chemicalName = r.Chemical_FALab.ChemicalName,
                     consumption = r.Consumption,
+                    badge = r.Waste != null ? r.Waste.Badge : 0,
                     wasteType = r.Waste != null ? r.Waste.WasteType : null,
                     wasteQuantity = r.Waste != null ? r.Waste.WasteQuantity : 0,
-                    wasteDate = r.Waste != null ? r.Waste.WasteDate.HasValue ? r.Waste.WasteDate.Value.ToString("dd MMM yyyy HH:mm") : null : null
+                    wasteDate = r.Waste != null ? r.Waste.WasteDate.HasValue ? r.Waste.WasteDate.Value.ToString("dd MMM yyyy HH:mm") : null : null,
+                    balance = (r.Waste == null) ? (int?)null : (r.Consumption - r.Waste.WasteQuantity)  // Modifikasi di baris ini
                 })
                 .ToList();
 
             return Json(new { rows = records });
         }
 
+
+        //ADD WASTE
         [HttpPost]
-        public IActionResult AddWaste(int idRecord, string wasteType, int wasteQuantity, DateTime wasteDate)
+        public IActionResult AddWaste(int idRecord, string wasteType, int wasteQuantity, DateTime wasteDate, int badge)
         {
             var record = _context.Records.FirstOrDefault(r => r.Id == idRecord);
             if (record == null)
@@ -80,6 +83,7 @@ namespace ChemicalProject.Controllers
                 record.Waste.WasteType = wasteType;
                 record.Waste.WasteQuantity = wasteQuantity;
                 record.Waste.WasteDate = wasteDate;
+                record.Waste.Badge = badge; 
             }
             else
             {
@@ -88,16 +92,15 @@ namespace ChemicalProject.Controllers
                 {
                     WasteType = wasteType,
                     WasteQuantity = wasteQuantity,
-                    WasteDate = wasteDate
+                    WasteDate = wasteDate,
+                    Badge = badge 
                 };
                 record.Waste = waste;
                 _context.Wastes.Add(waste);
             }
 
             _context.SaveChanges();
-
             return Json(new { success = true, message = "Waste added/updated successfully." });
         }
     }
-
 }

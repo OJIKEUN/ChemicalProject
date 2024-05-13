@@ -55,9 +55,11 @@
                         <th data-field="idRecord" data-sortable="true">ID Record</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
                         <th data-field="consumption" data-sortable="true">Consumption</th>
+                        <th data-field="badge" data-sortable="true">Badge</th> 
                         <th data-field="wasteType" data-sortable="true">Waste Type</th>
                         <th data-field="wasteQuantity" data-sortable="true">Waste Quantity</th>
                         <th data-field="wasteDate" data-sortable="true">Waste Date</th>
+                        <th data-field="balance" data-sortable="true" data-formatter="balanceFormatter">Balance</th> 
                         <th data-formatter="actionFormatter" class="text-center no-space-three" data-width="150">Actions</th>
                     </tr>
                 </thead>
@@ -81,8 +83,16 @@
                     <input type="hidden" id="chemicalName" name="chemicalName" />
                     <input type="hidden" id="consumption" name="consumption" />
                     <div class="mb-3">
+                        <label for="badge" class="form-label">badge</label>
+                        <input type="text" class="form-control" id="badge" name="badge" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="wasteType" class="form-label">Waste Type</label>
-                        <input type="text" class="form-control" id="wasteType" name="wasteType" required>
+                        <select class="form-control" id="wasteType" name="wasteType" required>
+                            <option value="">Select Waste Type</option>
+                            <option value="drainage">Drainage</option>
+                            <option value="TPS B3">TPS B3</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="wasteQuantity" class="form-label">Waste Quantity</label>
@@ -112,9 +122,23 @@
     <script>
         function actionFormatter(value, row, index) {
             return [
-                '<button class="btn btn-primary btn-sm add-waste-btn shadow" data-bs-toggle="modal" data-bs-target="#addWasteModal" data-id="' + row.idRecord + '" data-chemicalname="' + row.chemicalName + '" data-consumption="' + row.consumption + '">Add Waste</button>',
+                '<button class="btn btn-primary btn-sm add-waste-btn shadow" data-bs-toggle="modal" data-bs-target="#addWasteModal" data-id="' + row.idRecord + '" data-chemicalname="' + row.chemicalName + '" data-consumption="' + row.consumption + '">Update</button>',
             ].join(' ');
         }
+
+        function balanceFormatter(value, row, index) {
+            if (row.balance === null) {
+                return '-'; // Atau teks 'No Data' atau ikon yang menunjukkan data kosong
+            } else if (row.balance === 0) {
+                return '<span class="badge text-bg-success">Balanced</span>';
+            } else if (row.balance > 0) {
+                return '<span class="badge text-bg-warning">' + row.balance + '</span>';
+            } else {
+                return '<span class="badge text-bg-danger">' + row.balance + '</span>';
+            }
+        }
+
+
 
         //FORM WASTE
         $(document).ready(function () {
@@ -145,6 +169,10 @@
                     data: formData,
                     success: function (result) {
                         $('#table').bootstrapTable('refresh');
+                        $('#badge').val('');
+                        $('#wasteType').val(''); 
+                        $('#wasteQuantity').val('');
+                        $('#wasteDate').val('');
                         $('#addWasteModal').modal('hide');
                         alert(result.message);
                     },
