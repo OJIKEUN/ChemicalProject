@@ -43,6 +43,7 @@ namespace ChemicalProject.Controllers
             return View();
         }
 
+        //GET DATA
         public IActionResult GetData(int id)
         {
             var records = _context.Records
@@ -79,7 +80,6 @@ namespace ChemicalProject.Controllers
 
             if (record.Waste != null)
             {
-                // Update existing waste
                 record.Waste.WasteType = wasteType;
                 record.Waste.WasteQuantity = wasteQuantity;
                 record.Waste.WasteDate = wasteDate;
@@ -87,7 +87,6 @@ namespace ChemicalProject.Controllers
             }
             else
             {
-                // Create new waste
                 var waste = new Waste_FALab
                 {
                     WasteType = wasteType,
@@ -98,7 +97,7 @@ namespace ChemicalProject.Controllers
                 record.Waste = waste;
                 _context.Wastes.Add(waste);
             }
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
             _context.SaveChanges();
             return Json(new { success = true, message = "Waste added/updated successfully." });
         }

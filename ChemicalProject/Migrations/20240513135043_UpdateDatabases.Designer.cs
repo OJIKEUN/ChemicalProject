@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChemicalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240416041927_renametable")]
-    partial class renametable
+    [Migration("20240513135043_UpdateDatabases")]
+    partial class UpdateDatabases
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace ChemicalProject.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ChemicalProject.Models.Area", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Areas");
+                });
 
             modelBuilder.Entity("ChemicalProject.Models.Chemical_FALab", b =>
                 {
@@ -111,20 +128,99 @@ namespace ChemicalProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("ReceivedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ReceivedQuantity")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RecordDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("RequestDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("WasteId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChemicalId");
 
+                    b.HasIndex("WasteId");
+
                     b.ToTable("Records");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.Waste_FALab", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Badge")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("WasteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WasteQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WasteType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Wastes");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Records_FALab", b =>
@@ -135,7 +231,30 @@ namespace ChemicalProject.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ChemicalProject.Models.Waste_FALab", "Waste")
+                        .WithMany()
+                        .HasForeignKey("WasteId");
+
                     b.Navigation("Chemical_FALab");
+
+                    b.Navigation("Waste");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.User", b =>
+                {
+                    b.HasOne("ChemicalProject.Models.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId");
+
+                    b.HasOne("ChemicalProject.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
+
+                    b.Navigation("Role");
                 });
 #pragma warning restore 612, 618
         }

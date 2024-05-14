@@ -54,6 +54,32 @@
                         </ul>
                     </div>
                 </li>
+
+                <li class="@(currentController == "User" || currentController == "Role" || currentController == "Area" ? "active sidebar-dropdown" : "sidebar-dropdown")">
+                    <a href="#">
+                        <i class="icon-message-circle"></i>
+                        <span class="menu-text">Manage Account</span>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+                            <li>
+                                <a asp-controller="User" asp-action="index" class="@(currentController == "User" ? "current-page" : "")">
+                                    <span class="menu-text">User</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Role" asp-action="index" class="@(currentController == "Role" ? "current-page" : "")">
+                                    <span class="menu-text">Role</span>
+                                </a>
+                            </li>   
+                            <li>
+                                <a asp-controller="Area" asp-action="index" class="@(currentController == "Area" ? "current-page" : "")">
+                                    <span class="menu-text">Area</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 <li>
                     <a href="chat.html">
                         <i class="icon-message-circle"></i>
