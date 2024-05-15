@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ChemicalProject.Data;
+using ChemicalProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ChemicalProject.Data;
-using ChemicalProject.Models;
-using Microsoft.AspNetCore.Authorization;
-using ChemicalProject.Helper;
 
 namespace ChemicalProject.Controllers
 {
     public class Records_FALabController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUserService _userService;
 
-        public Records_FALabController(ApplicationDbContext context, IUserService userService)
+        public Records_FALabController(ApplicationDbContext context)
         {
             _context = context;
-            _userService = userService;
         }
 
         //GET INDEX
@@ -59,10 +52,10 @@ namespace ChemicalProject.Controllers
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .OrderBy(r => r.Id) 
+                .OrderBy(r => r.Id)
                 .ToList();
 
-            int currentStock = 0; 
+            int currentStock = 0;
             var data = records
                 .Select((r, index) =>
                 {
@@ -75,7 +68,7 @@ namespace ChemicalProject.Controllers
                         chemicalName = r.Chemical_FALab.ChemicalName,
                         receivedQuantity = r.ReceivedQuantity,
                         consumption = r.Consumption,
-                        currentStock = currentStock, 
+                        currentStock = currentStock,
                         justify = r.Justify,
                         recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
                         receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
@@ -87,16 +80,14 @@ namespace ChemicalProject.Controllers
             return Json(new { rows = data });
         }
 
-        [Authorize(Policy = "AreaPolicy")]
         // GET: Records_FALab/Create/5
         public IActionResult Create(int id)
         {
-            var userArea = User.FindFirst("Area")?.Value;
-            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == id && c.Area.Name == userArea);
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
 
             if (chemical == null)
             {
-                return Forbid();
+                return NotFound();
             }
 
             var records = new Records_FALab
@@ -113,7 +104,6 @@ namespace ChemicalProject.Controllers
         // POST: Records_FALab/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "AreaPolicy")]
         public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
             var userArea = User.FindFirst("Area")?.Value;
@@ -140,7 +130,6 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: Records_FALab/Edit/5
-        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -149,13 +138,12 @@ namespace ChemicalProject.Controllers
             }
 
             var records = await _context.Records
-                .Include(r => r.Chemical_FALab).ThenInclude(c => c.Area)
+                .Include(r => r.Chemical_FALab)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            var userArea = User.FindFirst("Area")?.Value;
-            if (records == null || records.Chemical_FALab.Area.Name != userArea)
+            if (records == null)
             {
-                return Forbid();
+                return NotFound();
             }
 
             ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records.ChemicalId);
@@ -221,13 +209,9 @@ namespace ChemicalProject.Controllers
 
         // POST: Records_FALab/DeleteConfirmed/5
         [HttpPost]
-        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> DeleteConfirmed(int id, int chemicalId)
         {
-            var userArea = User.FindFirst("Area")?.Value;
-            var records_FALab = await _context.Records
-                .Include(r => r.Chemical_FALab).ThenInclude(c => c.Area)
-                .FirstOrDefaultAsync(r => r.Id == id && r.ChemicalId == chemicalId && r.Chemical_FALab.Area.Name == userArea);
+            var records_FALab = await _context.Records.FindAsync(id);
             if (records_FALab != null)
             {
                 _context.Records.Remove(records_FALab);

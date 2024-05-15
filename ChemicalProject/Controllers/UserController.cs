@@ -22,7 +22,7 @@ namespace ChemicalProject.Controllers
         // GET: User
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Users.Include(u => u.Area).Include(u => u.Role);
+            var applicationDbContext = _context.Users.Include(u => u.Area);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -36,7 +36,6 @@ namespace ChemicalProject.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Area)
-                .Include(u => u.Role)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -50,7 +49,6 @@ namespace ChemicalProject.Controllers
         public IActionResult Create()
         {
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name");
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
             return View();
         }
 
@@ -59,7 +57,7 @@ namespace ChemicalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RoleId,AreaId,Name,UserName")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Role,AreaId,Name,UserName")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +66,6 @@ namespace ChemicalProject.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", user.AreaId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
             return View(user);
         }
 
@@ -86,7 +83,6 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", user.AreaId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
             return View(user);
         }
 
@@ -95,7 +91,7 @@ namespace ChemicalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RoleId,AreaId,Name,UserName")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Role,AreaId,Name,UserName")] User user)
         {
             if (id != user.Id)
             {
@@ -123,7 +119,6 @@ namespace ChemicalProject.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", user.AreaId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
             return View(user);
         }
 
@@ -137,7 +132,6 @@ namespace ChemicalProject.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Area)
-                .Include(u => u.Role)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {

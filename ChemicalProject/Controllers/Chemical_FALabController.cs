@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ChemicalProject.Data;
+using ChemicalProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ChemicalProject.Data;
-using ChemicalProject.Models;
-using Microsoft.AspNetCore.Authorization;
-using ChemicalProject.Helper;
 
 
 namespace ChemicalProject.Controllers
 {
     public class Chemical_FALabController : Controller
     {
-        private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public Chemical_FALabController(IUserService userService, ApplicationDbContext context)
+        public Chemical_FALabController(ApplicationDbContext context)
         {
-            _userService = userService;
             _context = context;
         }
 
@@ -95,7 +87,7 @@ namespace ChemicalProject.Controllers
             if (ModelState.IsValid)
             {
                 chemical_FALab.RequestDate = DateTime.Now;
-                
+
                 _context.Add(chemical_FALab);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Chemical has been created successfully.";

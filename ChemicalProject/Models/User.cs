@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 
 namespace ChemicalProject.Models
 {
@@ -9,10 +8,7 @@ namespace ChemicalProject.Models
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("RoleId")]
-        public int RoleId { get; set; }
-        [ValidateNever]
-        public Role Role { get; set; }
+        public string Role { get; set; }
 
         [ForeignKey("AreaId")]
         public int? AreaId { get; set; }

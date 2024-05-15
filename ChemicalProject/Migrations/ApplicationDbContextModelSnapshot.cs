@@ -151,23 +151,6 @@ namespace ChemicalProject.Migrations
                     b.ToTable("Records");
                 });
 
-            modelBuilder.Entity("ChemicalProject.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("ChemicalProject.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -183,8 +166,9 @@ namespace ChemicalProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -193,8 +177,6 @@ namespace ChemicalProject.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -259,15 +241,7 @@ namespace ChemicalProject.Migrations
                         .WithMany()
                         .HasForeignKey("AreaId");
 
-                    b.HasOne("ChemicalProject.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Area");
-
-                    b.Navigation("Role");
                 });
 #pragma warning restore 612, 618
         }
