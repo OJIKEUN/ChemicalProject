@@ -1,4 +1,5 @@
 using ChemicalProject.Data;
+using ChemicalProject.Helper;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,13 +15,12 @@ builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAuthorization(options =>
-{
-});
+builder.Services.AddAuthorization();
 
 builder.Services.AddRazorPages();
 
-// Register custom user service
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -38,7 +38,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<RoleAreaMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
