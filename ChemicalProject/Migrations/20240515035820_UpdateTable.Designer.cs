@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChemicalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240513135043_UpdateDatabases")]
-    partial class UpdateDatabases
+    [Migration("20240515035820_UpdateTable")]
+    partial class UpdateTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,9 @@ namespace ChemicalProject.Migrations
 
                     b.Property<DateTime?>("ApprovalDateManager")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Badge")
                         .HasColumnType("int");
@@ -100,6 +103,8 @@ namespace ChemicalProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
 
                     b.ToTable("Chemicals");
                 });
@@ -221,6 +226,17 @@ namespace ChemicalProject.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Wastes");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.Chemical_FALab", b =>
+                {
+                    b.HasOne("ChemicalProject.Models.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Records_FALab", b =>

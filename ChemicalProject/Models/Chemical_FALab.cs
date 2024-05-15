@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace ChemicalProject.Models
 {
@@ -17,8 +18,12 @@ namespace ChemicalProject.Models
 		public string Justify { get; set; }
 		public DateTime? RequestDate { get; set; }
 
+        [ForeignKey("AreaId")]
+        public int AreaId { get; set; }
+        [ValidateNever]
+        public Area Area { get; set; }
 
-		public bool? StatusManager { get; set; }
+        public bool? StatusManager { get; set; }
 		public string? RemarkManager { get; set; }
 		public DateTime? ApprovalDateManager { get; set; }
 

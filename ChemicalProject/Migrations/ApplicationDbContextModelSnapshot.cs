@@ -53,6 +53,9 @@ namespace ChemicalProject.Migrations
                     b.Property<DateTime?>("ApprovalDateManager")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Badge")
                         .HasColumnType("int");
 
@@ -97,6 +100,8 @@ namespace ChemicalProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
 
                     b.ToTable("Chemicals");
                 });
@@ -218,6 +223,17 @@ namespace ChemicalProject.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Wastes");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.Chemical_FALab", b =>
+                {
+                    b.HasOne("ChemicalProject.Models.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Records_FALab", b =>

@@ -7,18 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChemicalProject.Data;
 using ChemicalProject.Models;
+using Microsoft.AspNetCore.Authorization;
+using ChemicalProject.Helper;
 
 namespace ChemicalProject.Controllers
 {
     public class Records_FALabController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public Records_FALabController(ApplicationDbContext context)
+        public Records_FALabController(ApplicationDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
+        //GET INDEX
         public IActionResult Index(int id)
         {
             var chemicals = _context.Chemicals.FirstOrDefault(c => c.Id == id);
@@ -42,9 +47,15 @@ namespace ChemicalProject.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AreaPolicy")]
         public IActionResult GetData(int id)
         {
-            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
+            var userArea = User.FindFirst("Area")?.Value;
+            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == id && c.Area.Name == userArea);
+            if (chemical == null)
+            {
+                return Forbid();
+            }
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
@@ -76,14 +87,16 @@ namespace ChemicalProject.Controllers
             return Json(new { rows = data });
         }
 
+        [Authorize(Policy = "AreaPolicy")]
         // GET: Records_FALab/Create/5
         public IActionResult Create(int id)
         {
-            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
+            var userArea = User.FindFirst("Area")?.Value;
+            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == id && c.Area.Name == userArea);
 
             if (chemical == null)
             {
-                return NotFound();
+                return Forbid();
             }
 
             var records = new Records_FALab
@@ -100,8 +113,15 @@ namespace ChemicalProject.Controllers
         // POST: Records_FALab/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AreaPolicy")]
         public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
+            var userArea = User.FindFirst("Area")?.Value;
+            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == chemicalId && c.Area.Name == userArea);
+            if (chemical == null)
+            {
+                return Forbid();
+            }
 
             if (ModelState.IsValid)
             {
@@ -120,6 +140,7 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: Records_FALab/Edit/5
+        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -128,12 +149,13 @@ namespace ChemicalProject.Controllers
             }
 
             var records = await _context.Records
-                .Include(r => r.Chemical_FALab)
+                .Include(r => r.Chemical_FALab).ThenInclude(c => c.Area)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (records == null)
+            var userArea = User.FindFirst("Area")?.Value;
+            if (records == null || records.Chemical_FALab.Area.Name != userArea)
             {
-                return NotFound();
+                return Forbid();
             }
 
             ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records.ChemicalId);
@@ -143,6 +165,7 @@ namespace ChemicalProject.Controllers
         // POST: Records_FALab/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records_FALab)
         {
             if (id != records_FALab.Id)
@@ -150,7 +173,10 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var userArea = User.FindFirst("Area")?.Value;
+            var chemical = await _context.Chemicals.Include(c => c.Area).FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
+
+            if (ModelState.IsValid && chemical != null && chemical.Area.Name == userArea)
             {
                 try
                 {
@@ -171,15 +197,15 @@ namespace ChemicalProject.Controllers
                 }
 
                 // Mendapatkan data Chemical_FALab berdasarkan ChemicalId yang diedit
-                var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
-                if (chemical == null)
+                var chemicals = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
+                if (chemicals == null)
                 {
                     return NotFound();
                 }
 
                 // Menyimpan informasi ChemicalId dan ChemicalName ke ViewBag
                 ViewBag.ChemicalId = records_FALab.ChemicalId;
-                ViewBag.ChemicalName = chemical.ChemicalName;
+                ViewBag.ChemicalName = chemicals.ChemicalName;
 
                 return RedirectToAction(nameof(Index), new { id = records_FALab.ChemicalId });
             }
@@ -195,9 +221,13 @@ namespace ChemicalProject.Controllers
 
         // POST: Records_FALab/DeleteConfirmed/5
         [HttpPost]
+        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> DeleteConfirmed(int id, int chemicalId)
         {
-            var records_FALab = await _context.Records.FindAsync(id);
+            var userArea = User.FindFirst("Area")?.Value;
+            var records_FALab = await _context.Records
+                .Include(r => r.Chemical_FALab).ThenInclude(c => c.Area)
+                .FirstOrDefaultAsync(r => r.Id == id && r.ChemicalId == chemicalId && r.Chemical_FALab.Area.Name == userArea);
             if (records_FALab != null)
             {
                 _context.Records.Remove(records_FALab);

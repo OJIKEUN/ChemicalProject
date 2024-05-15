@@ -7,18 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChemicalProject.Data;
 using ChemicalProject.Models;
+using Microsoft.AspNetCore.Authorization;
+using ChemicalProject.Helper;
 
 
 namespace ChemicalProject.Controllers
 {
     public class Chemical_FALabController : Controller
     {
+        private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public Chemical_FALabController(ApplicationDbContext context)
+        public Chemical_FALabController(IUserService userService, ApplicationDbContext context)
         {
+            _userService = userService;
             _context = context;
         }
+
 
         // GET: Chemical_FALab
         public IActionResult Index()
@@ -49,6 +54,7 @@ namespace ChemicalProject.Controllers
                     statusESH = c.StatusESH,
                     remarkESH = c.RemarkESH,
                     approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
+                    areaName = c.Area.Name
                 }).ToList();
 
             return Json(new { rows = Chemicals });
@@ -75,6 +81,7 @@ namespace ChemicalProject.Controllers
         // GET: Chemical_FALab/Create
         public IActionResult Create()
         {
+            ViewBag.AreaId = new SelectList(_context.Areas, "Id", "Name");
             return View();
         }
 
@@ -83,7 +90,7 @@ namespace ChemicalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,price,Justify,Status,RequestDate")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,price,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (ModelState.IsValid)
             {
@@ -105,18 +112,19 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var chemical_FALab = await _context.Chemicals.FindAsync(id);
+            var chemical_FALab = await _context.Chemicals.Include(c => c.Area).FirstOrDefaultAsync(c => c.Id == id);
             if (chemical_FALab == null)
             {
                 return NotFound();
             }
+            ViewBag.AreaId = new SelectList(_context.Areas, "Id", "Name", chemical_FALab.AreaId);
             return View(chemical_FALab);
         }
 
         // POST: Chemical_FALab/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,price,Justify,RequestDate")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,price,Justify,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (id != chemical_FALab.Id)
             {
@@ -133,6 +141,7 @@ namespace ChemicalProject.Controllers
                 try
                 {
                     existingRecord.Badge = chemical_FALab.Badge;
+                    existingRecord.AreaId = chemical_FALab.AreaId;
                     existingRecord.ChemicalName = chemical_FALab.ChemicalName;
                     existingRecord.Brand = chemical_FALab.Brand;
                     existingRecord.Packaging = chemical_FALab.Packaging;
@@ -141,6 +150,7 @@ namespace ChemicalProject.Controllers
                     existingRecord.Price = chemical_FALab.Price;
                     existingRecord.Justify = chemical_FALab.Justify;
                     existingRecord.RequestDate = chemical_FALab.RequestDate;
+
                     _context.Update(existingRecord);
                     TempData["SuccessMessage"] = "Chemical has been edited successfully.";
                     await _context.SaveChangesAsync();

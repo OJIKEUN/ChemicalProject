@@ -26,6 +26,15 @@
                         </div>
                         <div class="col-6">
                             <div class="form-group">
+                                <label asp-for="AreaId" class="control-label">Area</label>
+                                <select asp-for="AreaId" asp-items="@ViewBag.AreaId" class="form-control">
+                                    <option value="">-- Select Area --</option>
+                                </select>
+                                <span asp-validation-for="AreaId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
                                 <label asp-for="ChemicalName" class="control-label"></label>
                                 <input asp-for="ChemicalName" class="form-control" />
                                 <span asp-validation-for="ChemicalName" class="text-danger"></span>
@@ -52,13 +61,7 @@
                                 <span asp-validation-for="Unit" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label asp-for="Price" class="control-label"></label>
-                                <input asp-for="Price" class="form-control" />
-                                <span asp-validation-for="Price" class="text-danger"></span>
-                            </div>
-                        </div>
+                        
                         <div class="col-6">
                             <div class="form-group">
                                 <label asp-for="MinimumStock" class="control-label"></label>
@@ -84,7 +87,7 @@
                     </div>
 
                     <div class="container d-flex justify-content-center">
-                        <input type="submit" value="Create" class="btn btn-primary" style="margin: 0 10px;" />
+                        <input type="submit" value="Update" class="btn btn-primary" style="margin: 0 10px;" />
                         <a asp-action="Index" class="btn btn-secondary" style="margin: 0 10px;">Back to List</a>
                     </div>
                 </div>

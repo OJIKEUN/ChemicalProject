@@ -1,7 +1,10 @@
 using ChemicalProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Negotiate;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
+using ChemicalProject.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,46 +16,52 @@ builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
 
 // layanan DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthorization(options =>
 {
-	// By default, all incoming requests will be authorized according to the default policy.
-	options.FallbackPolicy = options.DefaultPolicy;
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("AreaPolicy", policy => policy.RequireAssertion(context =>
+    {
+        var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
+        var area = context.User.FindFirst("Area")?.Value;
+        return (role == "Manager" || role == "Supervisor" || role == "User") && !string.IsNullOrEmpty(area);
+    }));
+
+    options.AddPolicy("ApprovalPolicy", policy => policy.RequireAssertion(context =>
+    {
+        var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
+        var area = context.User.FindFirst("Area")?.Value;
+        return role == "Manager" && !string.IsNullOrEmpty(area);
+    }));
 });
+
 builder.Services.AddRazorPages();
+
+// Register custom user service
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Home/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	app.UseHsts();
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
-
-// Konfigurasi routing
-
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapControllerRoute(
-    name: "approval",
-    pattern: "Approval/{action=Index}/{id?}");
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<RoleAreaMiddleware>();
+
 app.MapControllerRoute(
-	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
