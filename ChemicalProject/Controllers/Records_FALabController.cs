@@ -1,5 +1,7 @@
 ﻿using ChemicalProject.Data;
+using ChemicalProject.Helper;
 using ChemicalProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,30 +11,39 @@ namespace ChemicalProject.Controllers
     public class Records_FALabController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserAreaService _userAreaService;
 
-        public Records_FALabController(ApplicationDbContext context)
+        public Records_FALabController(ApplicationDbContext context, UserAreaService userAreaService)
         {
             _context = context;
+            _userAreaService = userAreaService;
         }
 
         //GET INDEX
-        public IActionResult Index(int id)
+        [Authorize(Policy = "UserArea")]
+        public async Task<IActionResult> Index(int id)
         {
-            var chemicals = _context.Chemicals.FirstOrDefault(c => c.Id == id);
-            if (chemicals == null)
+            var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == id);
+            if (chemical == null)
             {
                 return NotFound();
             }
 
-            var records = _context.Records
+            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
+            if (userAreaId != chemical.AreaId)
+            {
+                return Forbid();
+            }
+
+            var records = await _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .ToList();
+                .ToListAsync();
 
             var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
 
             ViewBag.ChemicalId = id;
-            ViewBag.ChemicalName = chemicals.ChemicalName;
+            ViewBag.ChemicalName = chemical.ChemicalName;
             ViewBag.CurrentStock = currentStock;
 
             return View();

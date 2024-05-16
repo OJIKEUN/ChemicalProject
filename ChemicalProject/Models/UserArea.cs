@@ -4,17 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChemicalProject.Models
 {
-    public class User
+    public class UserArea
     {
         [Key]
         public int Id { get; set; }
-        public string Role { get; set; }
 
         [ForeignKey("AreaId")]
         public int? AreaId { get; set; }
         [ValidateNever]
         public Area Area { get; set; }
-        [Required]
         public string Name { get; set; }
         public string UserName { get; set; }
     }

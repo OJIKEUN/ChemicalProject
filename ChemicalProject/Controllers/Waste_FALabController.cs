@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ChemicalProject.Data;
+﻿using ChemicalProject.Data;
 using ChemicalProject.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ChemicalProject.Controllers
@@ -83,7 +78,7 @@ namespace ChemicalProject.Controllers
                 record.Waste.WasteType = wasteType;
                 record.Waste.WasteQuantity = wasteQuantity;
                 record.Waste.WasteDate = wasteDate;
-                record.Waste.Badge = badge; 
+                record.Waste.Badge = badge;
             }
             else
             {
@@ -92,12 +87,12 @@ namespace ChemicalProject.Controllers
                     WasteType = wasteType,
                     WasteQuantity = wasteQuantity,
                     WasteDate = wasteDate,
-                    Badge = badge 
+                    Badge = badge
                 };
                 record.Waste = waste;
                 _context.Wastes.Add(waste);
             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+
             _context.SaveChanges();
             return Json(new { success = true, message = "Waste added/updated successfully." });
         }
