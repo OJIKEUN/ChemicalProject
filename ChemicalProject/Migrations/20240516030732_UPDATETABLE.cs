@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChemicalProject.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateTable : Migration
+    public partial class UPDATETABLE : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,19 +22,6 @@ namespace ChemicalProject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Areas", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Roles",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,30 +75,87 @@ namespace ChemicalProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "UserAdmins",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AreaId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_UserAdmins", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Areas_AreaId",
+                        name: "FK_UserAdmins_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAreas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAreas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_UserAreas_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalTable: "Areas",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserManagers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserManagers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserManagers_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalTable: "Areas",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserSupervisors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSupervisors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserSupervisors_Areas_AreaId",
+                        column: x => x.AreaId,
+                        principalTable: "Areas",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -162,14 +206,24 @@ namespace ChemicalProject.Migrations
                 column: "WasteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_AreaId",
-                table: "Users",
+                name: "IX_UserAdmins_AreaId",
+                table: "UserAdmins",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_RoleId",
-                table: "Users",
-                column: "RoleId");
+                name: "IX_UserAreas_AreaId",
+                table: "UserAreas",
+                column: "AreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserManagers_AreaId",
+                table: "UserManagers",
+                column: "AreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSupervisors_AreaId",
+                table: "UserSupervisors",
+                column: "AreaId");
         }
 
         /// <inheritdoc />
@@ -179,16 +233,22 @@ namespace ChemicalProject.Migrations
                 name: "Records");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "UserAdmins");
+
+            migrationBuilder.DropTable(
+                name: "UserAreas");
+
+            migrationBuilder.DropTable(
+                name: "UserManagers");
+
+            migrationBuilder.DropTable(
+                name: "UserSupervisors");
 
             migrationBuilder.DropTable(
                 name: "Chemicals");
 
             migrationBuilder.DropTable(
                 name: "Wastes");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Areas");

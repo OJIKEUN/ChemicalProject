@@ -1,71 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ChemicalProject.Data;
+using ChemicalProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ChemicalProject.Data;
-using ChemicalProject.Models;
-using Microsoft.AspNetCore.Authorization;
-using ChemicalProject.Helper;
 
 namespace ChemicalProject.Controllers
 {
     public class Records_FALabController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUserService _userService;
 
-        public Records_FALabController(ApplicationDbContext context, IUserService userService)
+        public Records_FALabController(ApplicationDbContext context)
         {
             _context = context;
-            _userService = userService;
         }
 
         //GET INDEX
-        public IActionResult Index(int id)
+        [Authorize(Policy = "UserAdmin")]
+        public async Task<IActionResult> Index(int id)
         {
-            var chemicals = _context.Chemicals.FirstOrDefault(c => c.Id == id);
-            if (chemicals == null)
+            var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == id);
+            if (chemical == null)
             {
                 return NotFound();
             }
 
-            var records = _context.Records
+            var records = await _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .ToList();
+                .ToListAsync();
 
             var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
 
             ViewBag.ChemicalId = id;
-            ViewBag.ChemicalName = chemicals.ChemicalName;
+            ViewBag.ChemicalName = chemical.ChemicalName;
             ViewBag.CurrentStock = currentStock;
 
             return View();
         }
 
         [HttpGet]
-        [Authorize(Policy = "AreaPolicy")]
         public IActionResult GetData(int id)
         {
-            var userArea = User.FindFirst("Area")?.Value;
-            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == id && c.Area.Name == userArea);
-            if (chemical == null)
-            {
-                return Forbid();
-            }
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .OrderBy(r => r.Id) 
+                .OrderBy(r => r.Id) // Mengurutkan berdasarkan Id untuk menjaga urutan kronologis
                 .ToList();
 
-            int currentStock = 0; 
+            int currentStock = 0; // Inisialisasi nilai stok saat ini
             var data = records
                 .Select((r, index) =>
                 {
+                    // Kalkulasi stok saat ini secara kumulatif
                     currentStock += r.ReceivedQuantity - r.Consumption;
 
                     return new
@@ -75,11 +64,11 @@ namespace ChemicalProject.Controllers
                         chemicalName = r.Chemical_FALab.ChemicalName,
                         receivedQuantity = r.ReceivedQuantity,
                         consumption = r.Consumption,
-                        currentStock = currentStock, 
+                        currentStock = currentStock, // Menggunakan nilai stok saat ini yang telah dikalkulasi
                         justify = r.Justify,
-                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null
+                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy") : null,
+                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy") : null,
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy") : null
                     };
                 })
                 .ToList();
@@ -87,16 +76,14 @@ namespace ChemicalProject.Controllers
             return Json(new { rows = data });
         }
 
-        [Authorize(Policy = "AreaPolicy")]
         // GET: Records_FALab/Create/5
         public IActionResult Create(int id)
         {
-            var userArea = User.FindFirst("Area")?.Value;
-            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == id && c.Area.Name == userArea);
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
 
             if (chemical == null)
             {
-                return Forbid();
+                return NotFound();
             }
 
             var records = new Records_FALab
@@ -111,24 +98,18 @@ namespace ChemicalProject.Controllers
         }
 
         // POST: Records_FALab/Create/5
+        // POST: Records_FALab/Create/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "AreaPolicy")]
         public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
-            var userArea = User.FindFirst("Area")?.Value;
-            var chemical = _context.Chemicals.Include(c => c.Area).FirstOrDefault(c => c.Id == chemicalId && c.Area.Name == userArea);
-            if (chemical == null)
-            {
-                return Forbid();
-            }
 
             if (ModelState.IsValid)
             {
                 records.ChemicalId = chemicalId;
                 records.RecordDate = DateTime.Now;
                 records.ReceivedDate = DateTime.Now;
-                records.ExpiredDate = DateTime.Now.AddMonths(1);
+                records.ExpiredDate = DateTime.Now.AddMonths(6);
 
                 _context.Add(records);
                 _context.SaveChanges();
@@ -140,7 +121,6 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: Records_FALab/Edit/5
-        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -149,13 +129,12 @@ namespace ChemicalProject.Controllers
             }
 
             var records = await _context.Records
-                .Include(r => r.Chemical_FALab).ThenInclude(c => c.Area)
+                .Include(r => r.Chemical_FALab)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            var userArea = User.FindFirst("Area")?.Value;
-            if (records == null || records.Chemical_FALab.Area.Name != userArea)
+            if (records == null)
             {
-                return Forbid();
+                return NotFound();
             }
 
             ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", records.ChemicalId);
@@ -165,7 +144,6 @@ namespace ChemicalProject.Controllers
         // POST: Records_FALab/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records_FALab)
         {
             if (id != records_FALab.Id)
@@ -173,10 +151,7 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var userArea = User.FindFirst("Area")?.Value;
-            var chemical = await _context.Chemicals.Include(c => c.Area).FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
-
-            if (ModelState.IsValid && chemical != null && chemical.Area.Name == userArea)
+            if (ModelState.IsValid)
             {
                 try
                 {
@@ -197,15 +172,15 @@ namespace ChemicalProject.Controllers
                 }
 
                 // Mendapatkan data Chemical_FALab berdasarkan ChemicalId yang diedit
-                var chemicals = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
-                if (chemicals == null)
+                var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == records_FALab.ChemicalId);
+                if (chemical == null)
                 {
                     return NotFound();
                 }
 
                 // Menyimpan informasi ChemicalId dan ChemicalName ke ViewBag
                 ViewBag.ChemicalId = records_FALab.ChemicalId;
-                ViewBag.ChemicalName = chemicals.ChemicalName;
+                ViewBag.ChemicalName = chemical.ChemicalName;
 
                 return RedirectToAction(nameof(Index), new { id = records_FALab.ChemicalId });
             }
@@ -221,13 +196,9 @@ namespace ChemicalProject.Controllers
 
         // POST: Records_FALab/DeleteConfirmed/5
         [HttpPost]
-        [Authorize(Policy = "AreaPolicy")]
         public async Task<IActionResult> DeleteConfirmed(int id, int chemicalId)
         {
-            var userArea = User.FindFirst("Area")?.Value;
-            var records_FALab = await _context.Records
-                .Include(r => r.Chemical_FALab).ThenInclude(c => c.Area)
-                .FirstOrDefaultAsync(r => r.Id == id && r.ChemicalId == chemicalId && r.Chemical_FALab.Area.Name == userArea);
+            var records_FALab = await _context.Records.FindAsync(id);
             if (records_FALab != null)
             {
                 _context.Records.Remove(records_FALab);

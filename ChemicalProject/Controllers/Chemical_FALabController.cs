@@ -8,19 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using ChemicalProject.Data;
 using ChemicalProject.Models;
 using Microsoft.AspNetCore.Authorization;
-using ChemicalProject.Helper;
 
 
 namespace ChemicalProject.Controllers
 {
     public class Chemical_FALabController : Controller
     {
-        private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public Chemical_FALabController(IUserService userService, ApplicationDbContext context)
+        public Chemical_FALabController(ApplicationDbContext context)
         {
-            _userService = userService;
             _context = context;
         }
 

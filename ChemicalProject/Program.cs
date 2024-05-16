@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
-using ChemicalProject.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,26 +19,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("AreaPolicy", policy => policy.RequireAssertion(context =>
-    {
-        var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
-        var area = context.User.FindFirst("Area")?.Value;
-        return (role == "Manager" || role == "Supervisor" || role == "User") && !string.IsNullOrEmpty(area);
-    }));
-
-    options.AddPolicy("ApprovalPolicy", policy => policy.RequireAssertion(context =>
-    {
-        var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
-        var area = context.User.FindFirst("Area")?.Value;
-        return role == "Manager" && !string.IsNullOrEmpty(area);
-    }));
+    options.AddPolicy("UserArea", policy => policy.RequireRole("UserArea"));
+    options.AddPolicy("UserSupervisor", policy => policy.RequireRole("UserSupervisor"));
+    options.AddPolicy("UserManager", policy => policy.RequireRole("UserManager"));
+    options.AddPolicy("UserAdmin", policy => policy.RequireRole("UserAdmin"));
 });
 
 builder.Services.AddRazorPages();
 
 // Register custom user service
-builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -56,9 +44,46 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-app.UseAuthorization();
+app.Use(async (context, next) =>
+{
+    if (context.User.Identity.IsAuthenticated)
+    {
+        var identity = new ClaimsIdentity();
+        var fullUsername = context.User.Identity.Name;
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-app.UseMiddleware<RoleAreaMiddleware>();
+        var isUserArea = await dbContext.UserAreas.AnyAsync(a => a.Username == fullUsername);
+        var isUserSuperVisor = await dbContext.UserSupervisors.AnyAsync(a => a.Username == fullUsername);
+        var isUserManager = await dbContext.UserManagers.AnyAsync(a => a.Username == fullUsername);
+        var isUserAdmin = await dbContext.UserAdmins.AnyAsync(a => a.Username == fullUsername);
+
+        if (isUserArea)
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, "UserArea"));
+        }
+
+        if (isUserSuperVisor)
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, "UserSupervisor"));
+        }
+
+        if (isUserManager)
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, "UserManager"));
+        }
+
+        if (isUserAdmin)
+        {
+            identity.AddClaim(new Claim(ClaimTypes.Role, "UserAdmin"));
+        }
+
+        context.User.AddIdentity(identity);
+    }
+
+    await next();
+});
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

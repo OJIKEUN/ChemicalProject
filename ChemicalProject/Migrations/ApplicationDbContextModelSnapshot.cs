@@ -151,24 +151,7 @@ namespace ChemicalProject.Migrations
                     b.ToTable("Records");
                 });
 
-            modelBuilder.Entity("ChemicalProject.Models.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("ChemicalProject.Models.User", b =>
+            modelBuilder.Entity("ChemicalProject.Models.UserAdmin", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -183,10 +166,11 @@ namespace ChemicalProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -194,9 +178,97 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex("RoleId");
+                    b.ToTable("UserAdmins");
+                });
 
-                    b.ToTable("Users");
+            modelBuilder.Entity("ChemicalProject.Models.UserArea", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserAreas");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.UserManager", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserManagers");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.UserSupervisor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserSupervisors");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Waste_FALab", b =>
@@ -253,21 +325,40 @@ namespace ChemicalProject.Migrations
                     b.Navigation("Waste");
                 });
 
-            modelBuilder.Entity("ChemicalProject.Models.User", b =>
+            modelBuilder.Entity("ChemicalProject.Models.UserAdmin", b =>
                 {
                     b.HasOne("ChemicalProject.Models.Area", "Area")
                         .WithMany()
                         .HasForeignKey("AreaId");
 
-                    b.HasOne("ChemicalProject.Models.Role", "Role")
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.UserArea", b =>
+                {
+                    b.HasOne("ChemicalProject.Models.Area", "Area")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AreaId");
 
                     b.Navigation("Area");
+                });
 
-                    b.Navigation("Role");
+            modelBuilder.Entity("ChemicalProject.Models.UserManager", b =>
+                {
+                    b.HasOne("ChemicalProject.Models.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId");
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("ChemicalProject.Models.UserSupervisor", b =>
+                {
+                    b.HasOne("ChemicalProject.Models.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId");
+
+                    b.Navigation("Area");
                 });
 #pragma warning restore 612, 618
         }

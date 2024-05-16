@@ -1,18 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace ChemicalProject.Models
 {
-    public class User
+    public class UserSupervisor
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("RoleId")]
-        public int RoleId { get; set; }
-        [ValidateNever]
-        public Role Role { get; set; }
+        public string Role { get; set; }
 
         [ForeignKey("AreaId")]
         public int? AreaId { get; set; }
@@ -20,6 +16,6 @@ namespace ChemicalProject.Models
         public Area Area { get; set; }
         [Required]
         public string Name { get; set; }
-        public string UserName { get; set; }
+        public string Username { get; set; }
     }
 }
