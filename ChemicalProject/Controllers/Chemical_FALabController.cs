@@ -21,7 +21,7 @@ namespace ChemicalProject.Controllers
             _context = context;
         }
 
-
+        
         // GET: Chemical_FALab
         public IActionResult Index()
         {

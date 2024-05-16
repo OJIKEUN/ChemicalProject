@@ -9,7 +9,6 @@ namespace ChemicalProject.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Role { get; set; }
 
         [ForeignKey("AreaId")]
         public int? AreaId { get; set; }

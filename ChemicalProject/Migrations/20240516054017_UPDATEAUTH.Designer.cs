@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChemicalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240516030732_UPDATETABLE")]
-    partial class UPDATETABLE
+    [Migration("20240516054017_UPDATEAUTH")]
+    partial class UPDATEAUTH
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,10 +169,6 @@ namespace ChemicalProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -192,14 +188,10 @@ namespace ChemicalProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AreaId")
+                    b.Property<int>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -222,14 +214,10 @@ namespace ChemicalProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AreaId")
+                    b.Property<int>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -252,14 +240,10 @@ namespace ChemicalProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AreaId")
+                    b.Property<int>("AreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -341,7 +325,9 @@ namespace ChemicalProject.Migrations
                 {
                     b.HasOne("ChemicalProject.Models.Area", "Area")
                         .WithMany()
-                        .HasForeignKey("AreaId");
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Area");
                 });
@@ -350,7 +336,9 @@ namespace ChemicalProject.Migrations
                 {
                     b.HasOne("ChemicalProject.Models.Area", "Area")
                         .WithMany()
-                        .HasForeignKey("AreaId");
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Area");
                 });
@@ -359,7 +347,9 @@ namespace ChemicalProject.Migrations
                 {
                     b.HasOne("ChemicalProject.Models.Area", "Area")
                         .WithMany()
-                        .HasForeignKey("AreaId");
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Area");
                 });

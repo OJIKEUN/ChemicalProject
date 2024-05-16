@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChemicalProject.Migrations
 {
     /// <inheritdoc />
-    public partial class UPDATETABLE : Migration
+    public partial class UPDATEAUTH : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -80,7 +80,6 @@ namespace ChemicalProject.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AreaId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -101,8 +100,7 @@ namespace ChemicalProject.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    AreaId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -113,7 +111,8 @@ namespace ChemicalProject.Migrations
                         name: "FK_UserAreas_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -122,8 +121,7 @@ namespace ChemicalProject.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    AreaId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -134,7 +132,8 @@ namespace ChemicalProject.Migrations
                         name: "FK_UserManagers_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -143,8 +142,7 @@ namespace ChemicalProject.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AreaId = table.Column<int>(type: "int", nullable: true),
+                    AreaId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -155,7 +153,8 @@ namespace ChemicalProject.Migrations
                         name: "FK_UserSupervisors_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

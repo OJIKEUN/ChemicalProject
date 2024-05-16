@@ -26,9 +26,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddRazorPages();
-
-// Register custom user service
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,7 +62,7 @@ app.Use(async (context, next) =>
 
         if (isUserSuperVisor)
         {
-            identity.AddClaim(new Claim(ClaimTypes.Role, "UserSupervisor"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, "UserSuperVisor"));
         }
 
         if (isUserManager)
