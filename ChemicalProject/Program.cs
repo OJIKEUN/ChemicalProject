@@ -22,11 +22,13 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("UserSupervisor", policy => policy.RequireRole("UserSupervisor"));
     options.AddPolicy("UserManager", policy => policy.RequireRole("UserManager"));
     options.AddPolicy("UserAdmin", policy => policy.RequireRole("UserAdmin"));
+    options.AddPolicy("AllowedUsers", policy =>
+        policy.RequireRole("UserAdmin", "UserArea", "UserManager", "UserSupervisor"));
 });
 
 builder.Services.AddRazorPages();
 var app = builder.Build();
-
+    
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -39,6 +41,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthentication();
 app.Use(async (context, next) =>
 {
@@ -79,6 +82,7 @@ app.Use(async (context, next) =>
 
     await next();
 });
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

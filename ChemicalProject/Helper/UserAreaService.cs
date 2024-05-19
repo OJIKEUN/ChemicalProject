@@ -24,13 +24,13 @@ namespace ChemicalProject.Helper
                 var userAdmin = await _context.UserAdmins.FirstOrDefaultAsync(u => u.UserName == windowsUsername);
                 if (userAdmin != null)
                 {
-                    areaId = null;
+                    areaId = userAdmin.AreaId; // Akan menjadi null jika UserAdmin tidak memiliki AreaId
                 }
 
                 var userSupervisor = await _context.UserSuperVisors.FirstOrDefaultAsync(u => u.UserName == windowsUsername);
                 if (userSupervisor != null)
                 {
-                    areaId = null;
+                    areaId = userSupervisor.AreaId;
                 }
 
                 var userManager = await _context.UserManagers.FirstOrDefaultAsync(u => u.UserName == windowsUsername);

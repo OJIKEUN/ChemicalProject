@@ -20,7 +20,7 @@ namespace ChemicalProject.Controllers
         }
 
         //GET INDEX
-        [Authorize(Policy = "UserArea")]
+        [Authorize(Policy = "AllowedUsers")]
         public async Task<IActionResult> Index(int id)
         {
             var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == id);
@@ -30,23 +30,27 @@ namespace ChemicalProject.Controllers
             }
 
             var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
-            if (userAreaId != chemical.AreaId)
+            var isUserAdmin = userAreaId == null;
+
+            if (isUserAdmin || userAreaId == chemical.AreaId)
+            {
+                var records = await _context.Records
+                    .Where(r => r.ChemicalId == id)
+                    .Include(r => r.Chemical_FALab)
+                    .ToListAsync();
+
+                var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
+
+                ViewBag.ChemicalId = id;
+                ViewBag.ChemicalName = chemical.ChemicalName;
+                ViewBag.CurrentStock = currentStock;
+
+                return View();
+            }
+            else
             {
                 return Forbid();
             }
-
-            var records = await _context.Records
-                .Where(r => r.ChemicalId == id)
-                .Include(r => r.Chemical_FALab)
-                .ToListAsync();
-
-            var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
-
-            ViewBag.ChemicalId = id;
-            ViewBag.ChemicalName = chemical.ChemicalName;
-            ViewBag.CurrentStock = currentStock;
-
-            return View();
         }
 
         [HttpGet]

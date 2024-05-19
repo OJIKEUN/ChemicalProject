@@ -10,7 +10,7 @@ namespace ChemicalProject.Models
         public int Id { get; set; }
 
         [ForeignKey("AreaId")]
-        public int? AreaId { get; set; }
+        public int AreaId { get; set; }
         [ValidateNever]
         public Area Area { get; set; }
         public string Name { get; set; }
