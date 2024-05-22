@@ -14,7 +14,7 @@ namespace ChemicalProject.Models
         public Chemical_FALab Chemical_FALab { get; set; }
         public int Badge { get; set; }
         public int ReceivedQuantity { get; set; }
-        public int Consumption { get; set; }
+        public int Consumption { get; set; }    
         public string Justify { get; set; }
 
         [NotMapped]

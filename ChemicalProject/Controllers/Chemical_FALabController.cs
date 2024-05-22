@@ -1,8 +1,12 @@
 ﻿using ChemicalProject.Data;
+using ChemicalProject.Helper;
 using ChemicalProject.Models;
+using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MimeKit;
 
 
 namespace ChemicalProject.Controllers
@@ -10,47 +14,85 @@ namespace ChemicalProject.Controllers
     public class Chemical_FALabController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public Chemical_FALabController(ApplicationDbContext context)
+        private readonly UserAreaService _userAreaService;
+        public Chemical_FALabController(ApplicationDbContext context, UserAreaService userAreaService)
         {
             _context = context;
+            _userAreaService = userAreaService;
         }
 
-
+        [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
         // GET: Chemical_FALab
         public IActionResult Index()
         {
             return View();
         }
-        // untuk dapet data di table
+
         //API ENDPOINT
         [HttpGet]
-        public IActionResult GetData()
+        public async Task<IActionResult> GetData()
         {
-            var Chemicals = _context.Chemicals
-                .Select(c => new
-                {
-                    id = c.Id,
-                    badge = c.Badge,
-                    chemicalName = c.ChemicalName,
-                    brand = c.Brand,
-                    packaging = c.Packaging,
-                    unit = c.Unit,
-                    minimumStock = c.MinimumStock,
-                    price = c.Price,
-                    justify = c.Justify,
-                    requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                    statusManager = c.StatusManager,
-                    remarkManager = c.RemarkManager,
-                    approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
-                    statusESH = c.StatusESH,
-                    remarkESH = c.RemarkESH,
-                    approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
-                    areaName = c.Area.Name
-                }).ToList();
+            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
 
-            return Json(new { rows = Chemicals });
+            if (User.IsInRole("UserAdmin") || !userAreaId.HasValue)
+            {
+                // Jika user adalah admin (areaId null), tampilkan semua data
+                var allChemicals = _context.Chemicals
+                    .Select(c => new
+                    {
+                        id = c.Id,
+                        badge = c.Badge,
+                        chemicalName = c.ChemicalName,
+                        brand = c.Brand,
+                        packaging = c.Packaging,
+                        unit = c.Unit,
+                        minimumStock = c.MinimumStock,
+                        price = c.Price,
+                        justify = c.Justify,
+                        requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        statusManager = c.StatusManager,
+                        remarkManager = c.RemarkManager,
+                        approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        statusESH = c.StatusESH,
+                        remarkESH = c.RemarkESH,
+                        approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        areaName = c.Area.Name
+                    })
+                    .ToList();
+
+                return Json(new { rows = allChemicals });
+            }
+            else
+            {
+                // Jika user bukan admin, filter berdasarkan areaId
+                var chemicals = _context.Chemicals
+                    .Where(c => c.AreaId == userAreaId.Value)
+                    .Select(c => new
+                    {
+                        id = c.Id,
+                        badge = c.Badge,
+                        chemicalName = c.ChemicalName,
+                        brand = c.Brand,
+                        packaging = c.Packaging,
+                        unit = c.Unit,
+                        minimumStock = c.MinimumStock,
+                        price = c.Price,
+                        justify = c.Justify,
+                        requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        statusManager = c.StatusManager,
+                        remarkManager = c.RemarkManager,
+                        approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        statusESH = c.StatusESH,
+                        remarkESH = c.RemarkESH,
+                        approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        areaName = c.Area.Name
+                    })
+                    .ToList();
+
+                return Json(new { rows = chemicals });
+            }
         }
+
 
         // GET: Chemical_FALab/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -77,25 +119,51 @@ namespace ChemicalProject.Controllers
             return View();
         }
 
-        // POST: Chemical_FALab/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,price,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,Price,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (ModelState.IsValid)
             {
                 chemical_FALab.RequestDate = DateTime.Now;
+                chemical_FALab.Username = User.Identity.Name;
 
                 _context.Add(chemical_FALab);
                 await _context.SaveChangesAsync();
+
+                var userArea = _context.UserAreas.FirstOrDefault(ua => ua.UserName == chemical_FALab.Username);
+                if (userArea != null)
+                {
+                    SendEmailNotification(userArea.EmailUser, userArea.EmailManager, chemical_FALab.Username);
+                }
+
                 TempData["SuccessMessage"] = "Chemical has been created successfully.";
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.AreaId = new SelectList(_context.Areas, "Id", "Name");
             return View(chemical_FALab);
         }
+        private void SendEmailNotification(string emailUser, string emailManager, string userName)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("ESH Notification", "bth-esh@infineon.com"));
+            message.To.Add(new MailboxAddress("Recipient", emailManager));
+            message.Cc.Add(new MailboxAddress("CC Recipient", emailUser));
+            message.Subject = $"New Chemical Request from {userName}";
 
+            var bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = $"<p>Dear All,</p><p>{userName} has submitted a new chemical request. Please review and take necessary actions.</p><p>Regards,<br>ESH Notification System</p>";
+
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using (var client = new SmtpClient())
+            {
+                client.Connect("mailrelay-internal.infineon.com", 25, false);
+                client.Send(message);
+                client.Disconnect(true);
+            }
+        }
         // GET: Chemical_FALab/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

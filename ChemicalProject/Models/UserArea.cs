@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MimeKit.Encodings;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,5 +16,7 @@ namespace ChemicalProject.Models
         public Area Area { get; set; }
         public string Name { get; set; }
         public string UserName { get; set; }
+        public string EmailUser {  get; set; }
+        public string EmailManager {  get; set; }
     }
 }

@@ -18,18 +18,20 @@ namespace ChemicalProject.Models
 		public string Justify { get; set; }
 		public DateTime? RequestDate { get; set; }
 
-        [ForeignKey("AreaId")]
-        public int AreaId { get; set; }
-        [ValidateNever]
-        public Area Area { get; set; }
+		[ForeignKey("AreaId")]
+		public int AreaId { get; set; }
+		[ValidateNever]
+		public Area Area { get; set; }
 
-        public bool? StatusManager { get; set; }
+
+		public bool? StatusManager { get; set; }
 		public string? RemarkManager { get; set; }
 		public DateTime? ApprovalDateManager { get; set; }
 
-        public bool? StatusESH { get; set; }
-        public string? RemarkESH { get; set; }
-        public DateTime? ApprovalDateESH { get; set; }
+		public bool? StatusESH { get; set; }
+		public string? RemarkESH { get; set; }
+		public DateTime? ApprovalDateESH { get; set; }
+        public string? Username { get; set; }
     }
 }
 

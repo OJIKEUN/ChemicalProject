@@ -20,7 +20,7 @@ namespace ChemicalProject.Controllers
         }
 
         //GET INDEX
-        [Authorize(Policy = "AllowedUsers")]
+        [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
         public async Task<IActionResult> Index(int id)
         {
             var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == id);

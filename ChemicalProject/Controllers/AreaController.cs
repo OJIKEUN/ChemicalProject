@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ChemicalProject.Data;
 using ChemicalProject.Models;
 
 namespace ChemicalProject.Controllers
 {
+    [Authorize(Roles = "UserAdmin")]
     public class AreaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +22,20 @@ namespace ChemicalProject.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Areas.ToListAsync());
+        }
+
+        [HttpGet]
+        public IActionResult GetData()
+        {
+            var Areas = _context.Areas
+                .Select(u => new
+                {
+                    id = u.Id,
+                    name = u.Name,
+                })
+                .ToList();
+
+            return Json(new { rows = Areas });
         }
 
         // GET: Area/Details/5
@@ -50,8 +63,6 @@ namespace ChemicalProject.Controllers
         }
 
         // POST: Area/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Area area)
@@ -82,8 +93,6 @@ namespace ChemicalProject.Controllers
         }
 
         // POST: Area/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Area area)
@@ -116,37 +125,19 @@ namespace ChemicalProject.Controllers
             return View(area);
         }
 
-        // GET: Area/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var area = await _context.Areas
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (area == null)
-            {
-                return NotFound();
-            }
-
-            return View(area);
-        }
-
         // POST: Area/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var area = await _context.Areas.FindAsync(id);
             if (area != null)
             {
                 _context.Areas.Remove(area);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = false });
         }
 
         private bool AreaExists(int id)

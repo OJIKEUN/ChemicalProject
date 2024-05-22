@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ChemicalProject.Models.Area>
+﻿@model IEnumerable<ChemicalProject.Models.UserSuperVisor>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,14 +7,30 @@
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
 <div class="row gutters mt-2">
     <div class="card">
-        <div class="card-header">Manage Area</div>
+        <div class="card-header">Manage User Account</div>
         <hr class="m-0" />
         <div class="card-body">
             <div class="row gutters">
+                <div class="card">
+                    <ul class="nav nav-pills nav-fill shadow">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="UserAdmin" asp-action="Index">Admin</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="UserManager" asp-action="Index">Manager</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Supervisor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="UserArea" asp-action="Index">User Area</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div id="toolbar">
                 <div class="btn-group me-2">
-                    <a class="btn btn-primary " asp-action="Create">Create Area</a>
+                    <a class="btn btn-primary " asp-action="Create">Create Account</a>
                 </div>
             </div>
             <table id="table"
@@ -31,7 +47,7 @@
                    data-show-columns="true"
                    data-buttons="[]"
                    data-key-events="true"
-                   data-url="@Url.Action("GetData", "Area")"
+                   data-url="@Url.Action("GetData", "UserSuperVisor")"
                    data-pagination="true"
                    data-show-export="true"
                    data-export-data-type="all"
@@ -41,7 +57,9 @@
                 <thead>
                     <tr>
                         <th data-field="name" data-sortable="true">Name</th>
-                        <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="180">Actions</th>
+                        <th data-field="userName" data-sortable="true">User Name</th>
+                        <th data-field="areaName" data-sortable="true">Area Name</th>
+                        <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="180">Actions</th
                     </tr>
                 </thead>
             </table>
@@ -59,9 +77,9 @@
     <script>
         function viewFormatter(value, row, index) {
             return `
-                        <a href="@Url.Action("Edit", "Area")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                        <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id})">Delete</a>
-                    `;
+                <a href="@Url.Action("Edit", "UserSuperVisor")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id})">Delete</a>
+            `;
         }
 
         function confirmDelete(id) {
@@ -82,7 +100,7 @@
 
         function deleteRecord(id) {
             $.ajax({
-                url: '@Url.Action("DeleteConfirmed", "Area")',
+                url: '@Url.Action("DeleteConfirmed", "UserSuperVisor")',
                 type: 'POST',
                 data: { id: id },
                 success: function (data) {

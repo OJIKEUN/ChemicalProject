@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<ChemicalProject.Models.Chemical_FALab>
+@{
     ViewData["Title"] = "Manager Appoval";
 }
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
@@ -29,7 +30,9 @@
 
                 <thead>
                     <tr>
+                        <th data-field="id" data-sortable="true">id</th>
                         <th data-field="badge" data-sortable="true">Badge</th>
+                        <th data-field="areaId" data-sortable="true">Area Id</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
                         <th data-field="brand" data-sortable="true">Brand</th>
                         <th data-field="packaging" data-sortable="true">Packaging</th>

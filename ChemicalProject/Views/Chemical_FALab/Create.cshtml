@@ -4,19 +4,12 @@
     ViewData["Title"] = "Create";
 }
 
-@* <h1>Create</h1>
-
-
-
-<hr />
- *@
 <div class="row gutters justify-content-center">
     <div class="col-10 mt-5">
         <form asp-action="Create">
             <div class="card m-0">
                 <div class="card-header">
                     <div class="card-title">Add New Chemical</div>
-                    <div class="card-sub-title">Kiw Kiw </div>
                 </div>
 
                 <div class="card-body">
@@ -37,6 +30,7 @@
                                 </select>
                                 <span asp-validation-for="AreaId" class="text-danger"></span>
                             </div>
+
                         </div>
                         <div class="col-6">
                             <div class="form-group">

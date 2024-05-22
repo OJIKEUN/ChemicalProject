@@ -1,7 +1,7 @@
-﻿@model ChemicalProject.Models.Area
+﻿@model ChemicalProject.Models.UserManager
 
 @{
-    ViewData["Title"] = "Edit Area";
+    ViewData["Title"] = "Edit";
 }
 
 <div class="row gutters justify-content-center">
@@ -9,7 +9,7 @@
         <form asp-action="Edit">
             <div class="card m-0">
                 <div class="card-header">
-                    <div class="card-title">Edit Area</div>
+                    <div class="card-title">Edit User Manager</div>
                 </div>
                 <div class="card-body">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -20,6 +20,22 @@
                                 <label asp-for="Name" class="control-label"></label>
                                 <input asp-for="Name" class="form-control" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="UserName" class="control-label"></label>
+                                <input asp-for="UserName" class="form-control" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="AreaId" class="control-label">Area</label>
+                                <select asp-for="AreaId" asp-items="@ViewBag.AreaId" class="form-control">
+                                    <option value="">-- Select Area --</option>
+                                </select>
+                                <span asp-validation-for="AreaId" class="text-danger"></span>
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,69 @@
+﻿@model ChemicalProject.Models.UserArea
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="row gutters justify-content-center">
+    <div class="col-5 mt-5">
+        <form asp-action="Create">
+            <div class="card m-0">
+                <div class="card-header">
+                    <div class="card-title">Create User Area</div>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row gutters justify-content-center">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Name" class="control-label"></label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="UserName" class="control-label"></label>
+                                <input asp-for="UserName" class="form-control" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="AreaId" class="control-label">Area</label>
+                                <select asp-for="AreaId" asp-items="@ViewBag.AreaId" class="form-control">
+                                    <option value="">-- Select Area --</option>
+                                </select>
+                                <span asp-validation-for="AreaId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="EmailUser" class="control-label"></label>
+                                <input asp-for="EmailUser" class="form-control" />
+                                <span asp-validation-for="EmailUser" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="EmailManager" class="control-label"></label>
+                                <input asp-for="EmailManager" class="form-control" />
+                                <span asp-validation-for="EmailManager" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container d-flex justify-content-center mt-3">
+                        <input type="submit" value="Create" class="btn btn-primary" style="margin: 0 10px;" />
+                        <a asp-action="Index" class="btn btn-secondary" style="margin: 0 10px;">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
