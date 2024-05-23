@@ -1,41 +1,46 @@
-﻿@{
-    ViewData["Title"] = "Record FALAB";
+﻿@model IEnumerable<ChemicalProject.Models.ActualRecord>
+
+@{
+    ViewData["Title"] = "Actual Records";
 }
 
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
 
+<!-- Breadcrumb navigation -->
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Chemical_FALab")">Chemical</a></li>
-    <li class="breadcrumb-item active">Records</li>
+    <li class="breadcrumb-item active">Actual Records</li>
 </ol>
 
 <div class="row gutters">
     <div class="card">
         <div class="card-body">
-            
-                <div class="card">
-                    <ul class="nav nav-pills nav-fill shadow">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Record</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Waste_FALab" asp-action="Index" asp-route-chemicalId="@ViewBag.ChemicalId">Waste</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="ActualRecord" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Actual Record</a>
-                        </li>
-                    </ul>
-                </div>
-            
+            <div class="card">
+                <ul class="nav nav-pills nav-fill shadow">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Records_FALab" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Record</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Waste_FALab" asp-action="Index" asp-route-chemicalId="@ViewBag.ChemicalId">Waste</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Actual Record</a>
+                    </li>
+                </ul>
+            </div>
+            <p>Area ID: @ViewBag.AreaId</p>
+            <p>Chemical Name: @ViewBag.ChemicalName</p>
             <p>Current Stock: @ViewBag.CurrentStock</p>
             <hr class="m-0" />
+
             <div id="toolbar">
                 <div class="btn-group me-2">
                     <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
                 </div>
             </div>
+
             <table id="table"
                    data-toggle="table"
                    data-locale="en-US"
@@ -50,28 +55,25 @@
                    data-show-columns="true"
                    data-buttons="[]"
                    data-key-events="true"
-                   data-url="@Url.Action("GetData", "Records_FALab")?id=@ViewBag.ChemicalId"
+                   data-url="@Url.Action("GetData", "ActualRecord")?id=@ViewBag.ChemicalId"
                    data-pagination="true"
                    data-show-export="true"
                    data-export-types="['sql', 'excel', 'pdf']"
                    data-page-size="25">
-
                 <thead>
                     <tr>
-                        <th data-field="id" data-sortable="true">ID</th>
+                        <!-- Tampilkan nilai currentStock yang benar -->
+                        <th data-field="areaId" data-sortable="true">Area ID</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
-                        <th data-field="badge" data-sortable="true">Badge</th>
-                        <th data-field="receivedQuantity" data-sortable="true">Received Quantity</th>
-                        <th data-field="consumption" data-sortable="true">Used Quantity</th>
                         <th data-field="currentStock" data-sortable="true">Current Stock</th>
-                        <th data-field="justify" data-sortable="true">Justification</th>
-                        <th data-field="recordDate" data-sortable="true">Record Date</th>
-                        <th data-field="receivedDate" data-sortable="true">Received Date</th>
-                        <th data-field="expiredDate" data-sortable="true">Expired Date</th>
-                        <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="100" data-width="180">Actions</th>
+                        <th data-field="badge" data-sortable="true">Badge</th>
+                        <th data-field="description" data-sortable="true">Description</th>
+                        <th data-field="date" data-sortable="true">Date</th>
+                        <th data-formatter="viewFormatter" data-align="center" data-width="180">Actions</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                </tbody>
             </table>
         </div>
     </div>
@@ -80,19 +82,19 @@
 @section Scripts {
     <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
-    <script src="~/vendor/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
+
     <script>
         function viewFormatter(value, row, index) {
             return `
-                                                <a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>
-                                            `;
+                                <a href="@Url.Action("Edit", "ActualRecord")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
+                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id})">Delete</a>
+                            `;
         }
 
-        function confirmDelete(id, chemicalId) {
+        function confirmDelete(id) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: 'You won\'t be able to revert this!',
@@ -103,16 +105,16 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteRecord(id, chemicalId);
+                    deleteRecord(id);
                 }
             });
         }
 
-        function deleteRecord(id, chemicalId) {
+        function deleteRecord(id) {
             $.ajax({
-                url: '@Url.Action("DeleteConfirmed", "Records_FALab")',
+                url: '@Url.Action("DeleteConfirmed", "ActualRecord")',
                 type: 'POST',
-                data: { id: id, chemicalId: chemicalId },
+                data: { id: id },
                 success: function (data) {
                     if (data.success) {
                         $('#table').bootstrapTable('refresh');
@@ -132,17 +134,6 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                                });
-
-        $(function () {
-            var notyf = new Notyf();
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            @:notyf.success('@TempData["SuccessMessage"]');
-        }
-                        })
-
-
+                });
     </script>
 }

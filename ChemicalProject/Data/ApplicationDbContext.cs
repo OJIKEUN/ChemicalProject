@@ -18,5 +18,6 @@ namespace ChemicalProject.Data
         public DbSet<UserManager> UserManagers { get; set; }
         public DbSet<UserAdmin> UserAdmins { get; set; }
         public DbSet<Area> Areas { get; set; }
+        public DbSet<ActualRecord> ActualRecords { get; set; }
     }
 }

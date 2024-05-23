@@ -16,7 +16,6 @@
 <div class="row gutters">
     <div class="card">
         <div class="card-body">
-            <div class="row gutters">
                 <div class="card">
                     <ul class="nav nav-pills nav-fill shadow">
                         <li class="nav-item">
@@ -25,9 +24,11 @@
                         <li class="nav-item">
                             <a class="nav-link active" href="#">Waste</a>
                         </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="ActualRecord" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Actual Record</a>
+                    </li>
                     </ul>
                 </div>
-            </div>
 
             <table id="table"
                    data-toggle="table"
@@ -51,7 +52,7 @@
 
                 <thead>
                     <tr>
-                        <th data-field="idRecord" data-sortable="true">ID Record</th>
+                        <th data-field="idRecord" data-sortable="true" data-width="5">ID Record</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
                         <th data-field="consumption" data-sortable="true">Consumption</th>
                         <th data-field="badge" data-sortable="true">Badge</th>

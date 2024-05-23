@@ -31,7 +31,10 @@ namespace ChemicalProject.Models
 		public bool? StatusESH { get; set; }
 		public string? RemarkESH { get; set; }
 		public DateTime? ApprovalDateESH { get; set; }
-        public string? Username { get; set; }
+		public string? Username { get; set; }
+
+        [ValidateNever]
+        public ICollection<ActualRecord> ActualRecords { get; set; }
     }
 }
 

@@ -4,6 +4,7 @@ using ChemicalProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChemicalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240522073638_AddActualRecord")]
+    partial class AddActualRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,7 +326,7 @@ namespace ChemicalProject.Migrations
             modelBuilder.Entity("ChemicalProject.Models.ActualRecord", b =>
                 {
                     b.HasOne("ChemicalProject.Models.Chemical_FALab", "Chemical_FALab")
-                        .WithMany("ActualRecords")
+                        .WithMany()
                         .HasForeignKey("ChemicalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -399,11 +402,6 @@ namespace ChemicalProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Area");
-                });
-
-            modelBuilder.Entity("ChemicalProject.Models.Chemical_FALab", b =>
-                {
-                    b.Navigation("ActualRecords");
                 });
 #pragma warning restore 612, 618
         }
