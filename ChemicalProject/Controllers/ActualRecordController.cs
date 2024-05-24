@@ -42,7 +42,6 @@ namespace ChemicalProject.Controllers
                     .Include(r => r.Chemical_FALab)
                     .ToListAsync();
 
-                // Mengambil currentStock dari tabel Records
                 var records = await _context.Records
                     .Where(r => r.ChemicalId == id)
                     .ToListAsync();
@@ -65,21 +64,12 @@ namespace ChemicalProject.Controllers
         public IActionResult GetData(int id)
         {
             var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
-
-            // Mengambil ActualRecords
             var records = _context.ActualRecords
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .OrderBy(r => r.Id) // Mengurutkan berdasarkan Id untuk menjaga urutan kronologis
+                .OrderBy(r => r.Id) 
                 .ToList();
-
-            // Mengambil currentStock dari tabel Records
-            var recordsSummary = _context.Records
-                .Where(r => r.ChemicalId == id)
-                .ToList();
-            var currentStock = recordsSummary.Sum(r => r.ReceivedQuantity) - recordsSummary.Sum(r => r.Consumption);
-
-            // Memetakan data actual records, gunakan currentStock sebagai satu nilai konstan
+            
             var data = records
                 .Select(r => new
                 {
@@ -88,16 +78,13 @@ namespace ChemicalProject.Controllers
                     areaId = r.Chemical_FALab.AreaId,
                     chemicalName = r.Chemical_FALab.ChemicalName,
                     description = r.Description,
-                    date = r.Date.ToString("dd MMM yyyy"),
-                    currentStock = currentStock
+                    date = r.Date.ToString("dd MMM yyyy HH:mm"),
+                    currentStock = r.CurrentStock 
                 })
                 .ToList();
 
             return Json(new { rows = data });
         }
-
-
-
 
         // GET: ActualRecord/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -119,26 +106,41 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: ActualRecord/Create
-        public IActionResult Create()
+        public IActionResult Create(int chemicalId)
         {
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "Id");
-            return View();
+            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == chemicalId);
+            if (chemical == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.ChemicalId = chemicalId;
+            return View(new ActualRecord { ChemicalId = chemicalId });
         }
 
         // POST: ActualRecord/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Badge,Description,Date,ChemicalId")] ActualRecord actualRecord)
+        public async Task<IActionResult> Create([Bind("Badge,Description,Date,ChemicalId")] ActualRecord actualRecord)
         {
+            var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == actualRecord.ChemicalId);
+            if (chemical == null)
+            {
+                ModelState.AddModelError("ChemicalId", "Invalid Chemical ID");
+            }
+
             if (ModelState.IsValid)
             {
+                var records = await _context.Records
+                    .Where(r => r.ChemicalId == actualRecord.ChemicalId)
+                    .ToListAsync();
+
+                actualRecord.CurrentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
                 _context.Add(actualRecord);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { id = actualRecord.ChemicalId });
             }
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "Id", actualRecord.ChemicalId);
+            ViewBag.ChemicalId = actualRecord.ChemicalId;
             return View(actualRecord);
         }
 
@@ -155,13 +157,11 @@ namespace ChemicalProject.Controllers
             {
                 return NotFound();
             }
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "Id", actualRecord.ChemicalId);
+            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", actualRecord.ChemicalId);
             return View(actualRecord);
         }
 
         // POST: ActualRecord/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,Description,Date,ChemicalId")] ActualRecord actualRecord)
@@ -175,12 +175,23 @@ namespace ChemicalProject.Controllers
             {
                 try
                 {
-                    _context.Update(actualRecord);
+                    var existingRecord = await _context.ActualRecords.FindAsync(id);
+
+                    if (existingRecord == null)
+                    {
+                        return NotFound();
+                    }
+                    existingRecord.Badge = actualRecord.Badge;
+                    existingRecord.Description = actualRecord.Description;
+                    existingRecord.Date = actualRecord.Date;
+                    existingRecord.ChemicalId = actualRecord.ChemicalId;
+
+                    _context.Update(existingRecord);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActualRecordExists(actualRecord.Id))
+                    if (!ActualRecordExistsMethod(actualRecord.Id))
                     {
                         return NotFound();
                     }
@@ -189,33 +200,19 @@ namespace ChemicalProject.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { id = actualRecord.ChemicalId });
             }
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "Id", actualRecord.ChemicalId);
+            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", actualRecord.ChemicalId);
             return View(actualRecord);
         }
 
-        // GET: ActualRecord/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        private bool ActualRecordExistsMethod(int id) 
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var actualRecord = await _context.ActualRecords
-                .Include(a => a.Chemical_FALab)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (actualRecord == null)
-            {
-                return NotFound();
-            }
-
-            return View(actualRecord);
+            return _context.ActualRecords.Any(e => e.Id == id);
         }
 
-        // POST: ActualRecord/Delete/5
-        [HttpPost, ActionName("Delete")]
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -223,15 +220,12 @@ namespace ChemicalProject.Controllers
             if (actualRecord != null)
             {
                 _context.ActualRecords.Remove(actualRecord);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Record deleted successfully" });
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = false, message = "Record not found" });
         }
 
-        private bool ActualRecordExists(int id)
-        {
-            return _context.ActualRecords.Any(e => e.Id == id);
-        }
     }
 }

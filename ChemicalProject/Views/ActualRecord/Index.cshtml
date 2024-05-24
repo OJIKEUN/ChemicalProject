@@ -3,16 +3,15 @@
 @{
     ViewData["Title"] = "Actual Records";
 }
-
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
-
-<!-- Breadcrumb navigation -->
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Chemical_FALab")">Chemical</a></li>
     <li class="breadcrumb-item active">Actual Records</li>
 </ol>
+
+@Html.AntiForgeryToken() <!-- Tambahkan ini untuk Anti-Forgery Token -->
 
 <div class="row gutters">
     <div class="card">
@@ -30,14 +29,12 @@
                     </li>
                 </ul>
             </div>
-            <p>Area ID: @ViewBag.AreaId</p>
-            <p>Chemical Name: @ViewBag.ChemicalName</p>
             <p>Current Stock: @ViewBag.CurrentStock</p>
             <hr class="m-0" />
 
             <div id="toolbar">
                 <div class="btn-group me-2">
-                    <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
+                    <a asp-action="Create" asp-route-chemicalId="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
                 </div>
             </div>
 
@@ -62,13 +59,11 @@
                    data-page-size="25">
                 <thead>
                     <tr>
-                        <!-- Tampilkan nilai currentStock yang benar -->
-                        <th data-field="areaId" data-sortable="true">Area ID</th>
-                        <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
-                        <th data-field="currentStock" data-sortable="true">Current Stock</th>
-                        <th data-field="badge" data-sortable="true">Badge</th>
+                        <th data-field="chemicalName" data-sortable="true" data-width="250">Chemical Name</th>
+                        <th data-field="currentStock" data-sortable="true" data-width="200">Current Stock</th>
+                        <th data-field="badge" data-sortable="true" data-width="200">Badge</th>
                         <th data-field="description" data-sortable="true">Description</th>
-                        <th data-field="date" data-sortable="true">Date</th>
+                        <th data-field="date" data-sortable="true" data-width="200">Date</th>
                         <th data-formatter="viewFormatter" data-align="center" data-width="180">Actions</th>
                     </tr>
                 </thead>
@@ -111,19 +106,27 @@
         }
 
         function deleteRecord(id) {
+            var form = $('form');
+            var token = form.find('input[name="__RequestVerificationToken"]').val();
+
             $.ajax({
                 url: '@Url.Action("DeleteConfirmed", "ActualRecord")',
                 type: 'POST',
-                data: { id: id },
+                data: {
+                    __RequestVerificationToken: token,
+                    id: id
+                },
                 success: function (data) {
+                    console.log('Success response:', data);
                     if (data.success) {
                         $('#table').bootstrapTable('refresh');
                         Swal.fire("Deleted!", "Your record has been deleted.", "success");
                     } else {
-                        Swal.fire("Error!", "Failed to delete the record.", "error");
+                        Swal.fire("Error!", data.message, "error");
                     }
                 },
-                error: function () {
+                error: function (xhr, status, error) {
+                    console.log('Error:', error);
                     Swal.fire("Error!", "An error occurred while deleting the record.", "error");
                 }
             });
@@ -134,6 +137,10 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                });
+                        });
     </script>
+
+    <form method="post" style="display:none">
+        @Html.AntiForgeryToken()
+    </form>
 }

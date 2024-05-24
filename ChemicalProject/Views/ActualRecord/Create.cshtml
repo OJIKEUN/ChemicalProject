@@ -4,44 +4,51 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>ActualRecord</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row gutters justify-content-center">
+    <div class="col-5 mt-5">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Badge" class="control-label"></label>
-                <input asp-for="Badge" class="form-control" />
-                <span asp-validation-for="Badge" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ChemicalId" class="control-label"></label>
-                <select asp-for="ChemicalId" class ="form-control" asp-items="ViewBag.ChemicalId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="card m-0">
+                <div class="card-header">
+                    <div class="card-title">Create Actual Record</div>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row gutters justify-content-center">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Badge" class="control-label"></label>
+                                <input asp-for="Badge" class="form-control" />
+                                <span asp-validation-for="Badge" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Description" class="control-label"></label>
+                                <input asp-for="Description" class="form-control" />
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Date" class="control-label"></label>
+                                <input asp-for="Date" class="form-control" />
+                                <span asp-validation-for="Date" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <input type="hidden" asp-for="ChemicalId" value="@ViewBag.ChemicalId" />
+                    </div>
+                    <div class="container d-flex justify-content-center mt-3">
+                        <input type="submit" value="Create" class="btn btn-primary" style="margin: 0 10px;" />
+                        <a asp-action="Index" asp-route-id="@ViewBag.ChemicalId" class="btn btn-secondary" style="margin: 0 10px;">Back to List</a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
