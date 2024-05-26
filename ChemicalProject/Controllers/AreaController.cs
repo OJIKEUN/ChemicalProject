@@ -71,6 +71,7 @@ namespace ChemicalProject.Controllers
             {
                 _context.Add(area);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Area has been created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(area);
@@ -108,6 +109,7 @@ namespace ChemicalProject.Controllers
                 {
                     _context.Update(area);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Area has been updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

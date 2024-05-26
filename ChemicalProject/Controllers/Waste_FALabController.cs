@@ -35,6 +35,13 @@ namespace ChemicalProject.Controllers
             ViewBag.ChemicalName = chemical.ChemicalName;
             ViewBag.CurrentStock = currentStock;
 
+            // Check user roles
+            var isAdmin = User.IsInRole("UserAdmin");
+            var isManager = User.IsInRole("UserManager");
+            var isArea = User.IsInRole("UserArea");
+
+            ViewBag.CanEdit = isAdmin || isManager || isArea;
+
             return View();
         }
 
@@ -55,13 +62,12 @@ namespace ChemicalProject.Controllers
                     wasteType = r.Waste != null ? r.Waste.WasteType : null,
                     wasteQuantity = r.Waste != null ? r.Waste.WasteQuantity : 0,
                     wasteDate = r.Waste != null ? r.Waste.WasteDate.HasValue ? r.Waste.WasteDate.Value.ToString("dd MMM yyyy HH:mm") : null : null,
-                    balance = (r.Waste == null) ? (int?)null : (r.Consumption - r.Waste.WasteQuantity)  // Modifikasi di baris ini
+                    balance = (r.Waste == null) ? (int?)null : (r.Consumption - r.Waste.WasteQuantity)
                 })
                 .ToList();
 
             return Json(new { rows = records });
         }
-
 
         //ADD WASTE
         [HttpPost]
@@ -97,4 +103,5 @@ namespace ChemicalProject.Controllers
             return Json(new { success = true, message = "Waste added/updated successfully." });
         }
     }
+
 }

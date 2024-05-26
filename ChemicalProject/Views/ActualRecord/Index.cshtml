@@ -74,18 +74,38 @@
     </div>
 </div>
 
+<input type="hidden" id="isUserAdmin" value="@(((bool)ViewBag.IsUserAdmin).ToString().ToLower())" />
+<input type="hidden" id="isUserManager" value="@(((bool)ViewBag.IsUserManager).ToString().ToLower())" />
+<input type="hidden" id="isUserArea" value="@(((bool)ViewBag.IsUserArea).ToString().ToLower())" />
+<input type="hidden" id="isUserSuperVisor" value="@(((bool)ViewBag.IsUserSupervisor).ToString().ToLower())" />
+
 @section Scripts {
     <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
-
     <script>
         function viewFormatter(value, row, index) {
+            let editButton = '';
+            let deleteButton = '';
+
+            const isUserAdmin = document.getElementById('isUserAdmin').value === 'true';
+            const isUserManager = document.getElementById('isUserManager').value === 'true';
+            const isUserArea = document.getElementById('isUserArea').value === 'true';
+            const isUserSuperVisor = document.getElementById('isUserSuperVisor').value === 'true';
+
+            if (isUserAdmin || isUserSuperVisor) {
+                editButton = `<a href="@Url.Action("Edit", "ActualRecord")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
+            }
+
+            if (isUserAdmin) {
+                deleteButton = `<a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>`;
+            }
+
             return `
-                                <a href="@Url.Action("Edit", "ActualRecord")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id})">Delete</a>
+                                ${editButton}
+                                ${deleteButton}
                             `;
         }
 
@@ -137,7 +157,7 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                        });
+            });
     </script>
 
     <form method="post" style="display:none">

@@ -5,30 +5,31 @@
 }
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
+
 <div class="row gutters mt-2">
     <div class="card">
         <div class="card-header">Manage User Account</div>
         <hr class="m-0" />
         <div class="card-body">
-                <div class="card">
-                    <ul class="nav nav-pills nav-fill shadow">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Admin</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="UserManager" asp-action="Index">Manager</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="UserSuperVisor" asp-action="Index">Supervisor</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="UserArea" asp-action="Index">User Area</a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="card">
+                <ul class="nav nav-pills nav-fill shadow">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="UserManager" asp-action="Index">Manager</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="UserSuperVisor" asp-action="Index">Supervisor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="UserArea" asp-action="Index">User Area</a>
+                    </li>
+                </ul>
+            </div>
             <div id="toolbar">
                 <div class="btn-group me-2">
-                    <a class="btn btn-primary " asp-action="Create">Create Account</a>
+                    <a class="btn btn-primary" asp-action="Create">Create Account</a>
                 </div>
             </div>
             <table id="table"
@@ -51,13 +52,11 @@
                    data-export-data-type="all"
                    data-export-types="['sql', 'excel', 'pdf']"
                    data-page-size="50">
-
-
                 <thead>
                     <tr>
                         <th data-field="name" data-sortable="true">Name</th>
                         <th data-field="userName" data-sortable="true">User Name</th>
-                        <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="100" data-width="180">Actions</th
+                        <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="100" data-width="180">Actions</th>
                     </tr>
                 </thead>
             </table>
@@ -72,6 +71,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function viewFormatter(value, row, index) {
             return `
@@ -81,40 +81,50 @@
         }
 
         function confirmDelete(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You won\'t be able to revert this!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-               deleteRecord(id);
-            }
-        });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteRecord(id);
+                }
+            });
         }
 
-function deleteRecord(id) {
-    $.ajax({
-        url: '@Url.Action("DeleteConfirmed", "UserAdmin")',
-        type: 'POST',
-        data: { id: id },
-        success: function (data) {
-            if (data.success) {
-                $('#table').bootstrapTable('refresh');
-                Swal.fire("Deleted!", "Your record has been deleted.", "success");
-            } else {
-                Swal.fire("Error!", "Failed to delete the record.", "error");
-            }
-        },
-        error: function () {
-            Swal.fire("Error!", "An error occurred while deleting the record.", "error");
+        function deleteRecord(id) {
+            $.ajax({
+                url: '@Url.Action("DeleteConfirmed", "UserAdmin")',
+                type: 'POST',
+                data: { id: id },
+                success: function (data) {
+                    if (data.success) {
+                        $('#table').bootstrapTable('refresh');
+                        Swal.fire("Deleted!", "Your record has been deleted.", "success");
+                    } else {
+                        Swal.fire("Error!", "Failed to delete the record.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error!", "An error occurred while deleting the record.", "error");
+                }
+            });
         }
-    });
-}
 
+        $(function () {
+        @if (TempData["SuccessMessage"] != null)
+        {
+            @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
+        }
+                    });
     </script>
-}
 
+    <!-- Hidden form to store Anti-Forgery Token -->
+    <form method="post" style="display:none">
+        @Html.AntiForgeryToken()
+    </form>
+}

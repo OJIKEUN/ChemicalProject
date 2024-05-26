@@ -114,5 +114,12 @@
                 }
             });
         }
+
+        $(function () {
+        @if (TempData["SuccessMessage"] != null)
+        {
+            @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
+        }
+            });
     </script>
 }

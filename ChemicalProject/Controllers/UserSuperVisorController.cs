@@ -80,6 +80,7 @@ namespace ChemicalProject.Controllers
             {
                 _context.Add(userSuperVisor);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Supervisor has been created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", userSuperVisor.AreaId);
@@ -130,6 +131,7 @@ namespace ChemicalProject.Controllers
 
                     _context.Update(existingUserSuperVisor);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Supervisor has been updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

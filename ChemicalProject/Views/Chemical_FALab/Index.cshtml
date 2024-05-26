@@ -64,7 +64,7 @@
     </div>
 </div>
 
-
+<input type="hidden" id="isUserAdmin" value="@Json.Serialize(User.IsInRole("UserAdmin"))" />
 @section Scripts {
     <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
@@ -80,14 +80,17 @@
             let editButton = '';
             let deleteButton = '';
 
-            if (row.statusManager === true && row.statusESH === true) {
-                indexButton = `<a href="@Url.Action("Index", "Records_FALab")?id=${row.id}" class="btn btn-primary btn-sm shadow">Records</a>`;
+            const isUserAdmin = JSON.parse(document.getElementById('isUserAdmin').value);
+
+            if (isUserAdmin) {
                 editButton = `<a href="@Url.Action("Edit", "Chemical_FALab")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
                 deleteButton = `<a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>`;
+            }
+
+            if (row.statusManager === true && row.statusESH === true) {
+                indexButton = `<a href="@Url.Action("Index", "Records_FALab")?id=${row.id}" class="btn btn-primary btn-sm shadow">Records</a>`;
             } else {
                 indexButton = `<button class="btn btn-primary btn-sm shadow" disabled>Records</button>`;
-                editButton = `<button class="btn btn-info btn-sm shadow" disabled>Edit</button>`;
-                deleteButton = `<button class="btn btn-danger btn-sm shadow" disabled>Delete</button>`;
             }
 
             return `
@@ -134,23 +137,13 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                        });
-        
-
-        $(function () {
-            var notyf = new Notyf();
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            @:notyf.success('@TempData["SuccessMessage"]');
-        }
-
                 // Inisialisasi Popover
                 $('[data-toggle="popover"]').popover({
                     trigger: 'hover',
                     placement: 'top'
                 });
-        });
+                        });
+
         $('#table').on('post-body.bs.table', function () {
             $('[data-bs-toggle="popover"]').popover();
         });

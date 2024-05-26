@@ -45,6 +45,11 @@ namespace ChemicalProject.Controllers
                 ViewBag.ChemicalName = chemical.ChemicalName;
                 ViewBag.CurrentStock = currentStock;
 
+                ViewBag.IsUserAdmin = User.IsInRole("UserAdmin");
+                ViewBag.IsUserManager = User.IsInRole("UserManager");
+                ViewBag.IsUserArea = User.IsInRole("UserArea");
+                ViewBag.IsUserSupervisor = User.IsInRole("UserSupervisor");
+
                 return View();
             }
             else
@@ -90,6 +95,7 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: Records_FALab/Create/5
+        [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
         public IActionResult Create(int id)
         {
             var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
@@ -111,9 +117,10 @@ namespace ChemicalProject.Controllers
         }
 
         // POST: Records_FALab/Create/5
-        // POST: Records_FALab/Create/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
         public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
 
@@ -133,7 +140,9 @@ namespace ChemicalProject.Controllers
             return View(records);
         }
 
+
         // GET: Records_FALab/Edit/5
+        [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -157,6 +166,7 @@ namespace ChemicalProject.Controllers
         // POST: Records_FALab/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records_FALab)
         {
             if (id != records_FALab.Id)
@@ -209,6 +219,7 @@ namespace ChemicalProject.Controllers
 
         // POST: Records_FALab/DeleteConfirmed/5
         [HttpPost]
+        [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
         public async Task<IActionResult> DeleteConfirmed(int id, int chemicalId)
         {
             var records_FALab = await _context.Records.FindAsync(id);
@@ -216,10 +227,10 @@ namespace ChemicalProject.Controllers
             {
                 _context.Records.Remove(records_FALab);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true }); // Mengembalikan objek JSON dengan success = true
+                return Json(new { success = true });
             }
 
-            return Json(new { success = false }); // Mengembalikan objek JSON dengan success = false jika record tidak ditemukan
+            return Json(new { success = false }); 
         }
     }
 }

@@ -24,6 +24,7 @@ namespace ChemicalProject.Controllers
             _userAreaService = userAreaService;
         }
 
+        [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
         public async Task<IActionResult> Index(int id)
         {
             var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == id);
@@ -51,6 +52,11 @@ namespace ChemicalProject.Controllers
                 ViewBag.ChemicalName = chemical.ChemicalName;
                 ViewBag.CurrentStock = currentStock;
                 ViewBag.AreaId = chemical.AreaId;
+
+                ViewBag.IsUserAdmin = User.IsInRole("UserAdmin");
+                ViewBag.IsUserManager = User.IsInRole("UserManager");
+                ViewBag.IsUserArea = User.IsInRole("UserArea");
+                ViewBag.IsUserSupervisor = User.IsInRole("UserSuperVisor");
 
                 return View(actualRecords);
             }
@@ -86,26 +92,8 @@ namespace ChemicalProject.Controllers
             return Json(new { rows = data });
         }
 
-        // GET: ActualRecord/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var actualRecord = await _context.ActualRecords
-                .Include(a => a.Chemical_FALab)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (actualRecord == null)
-            {
-                return NotFound();
-            }
-
-            return View(actualRecord);
-        }
-
         // GET: ActualRecord/Create
+        [Authorize(Roles = "UserAdmin,UserSuperVisor")]
         public IActionResult Create(int chemicalId)
         {
             var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == chemicalId);
@@ -119,6 +107,7 @@ namespace ChemicalProject.Controllers
         }
 
         // POST: ActualRecord/Create
+        [Authorize(Roles = "UserAdmin,UserSuperVisor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Badge,Description,Date,ChemicalId")] ActualRecord actualRecord)
@@ -138,6 +127,7 @@ namespace ChemicalProject.Controllers
                 actualRecord.CurrentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
                 _context.Add(actualRecord);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Record created successfully";
                 return RedirectToAction(nameof(Index), new { id = actualRecord.ChemicalId });
             }
             ViewBag.ChemicalId = actualRecord.ChemicalId;
@@ -145,6 +135,7 @@ namespace ChemicalProject.Controllers
         }
 
         // GET: ActualRecord/Edit/5
+        [Authorize(Roles = "UserAdmin,UserSuperVisor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -152,16 +143,19 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var actualRecord = await _context.ActualRecords.FindAsync(id);
+            var actualRecord = await _context.ActualRecords
+                .Include(a => a.Chemical_FALab)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (actualRecord == null)
             {
                 return NotFound();
             }
-            ViewData["ChemicalId"] = new SelectList(_context.Chemicals, "Id", "ChemicalName", actualRecord.ChemicalId);
+
             return View(actualRecord);
         }
 
         // POST: ActualRecord/Edit/5
+        [Authorize(Roles = "UserAdmin,UserSuperVisor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,Description,Date,ChemicalId")] ActualRecord actualRecord)
@@ -188,6 +182,7 @@ namespace ChemicalProject.Controllers
 
                     _context.Update(existingRecord);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Record update successfully";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -210,7 +205,6 @@ namespace ChemicalProject.Controllers
         {
             return _context.ActualRecords.Any(e => e.Id == id);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

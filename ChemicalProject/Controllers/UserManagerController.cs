@@ -83,6 +83,7 @@ namespace ChemicalProject.Controllers
             {
                 _context.Add(userManager);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Manager has been created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", userManager.AreaId);
@@ -137,6 +138,7 @@ namespace ChemicalProject.Controllers
                     existingUserManager.UserName = userManager.UserName;
 
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Manager has been updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

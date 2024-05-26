@@ -76,8 +76,6 @@ namespace ChemicalProject.Controllers
         }
 
         // POST: UserArea/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,AreaId,Name,UserName,EmailUser,EmailManager")] UserArea userArea)
@@ -86,6 +84,7 @@ namespace ChemicalProject.Controllers
             {
                 _context.Add(userArea);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "User Area has been created successfully!";
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", userArea.AreaId);
@@ -137,6 +136,7 @@ namespace ChemicalProject.Controllers
 
                     _context.Update(existingUserArea);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "User Area has been updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {

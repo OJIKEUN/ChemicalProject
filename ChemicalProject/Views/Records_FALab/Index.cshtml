@@ -2,6 +2,7 @@
     ViewData["Title"] = "Record FALAB";
 }
 
+<!-- Link ke Bootstrap Table dan CSS lainnya -->
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
 <link href="~/vendor/bootstrap-table/bootstrap-table-sticky-header.css" rel="stylesheet" />
 
@@ -14,26 +15,30 @@
 <div class="row gutters">
     <div class="card">
         <div class="card-body">
-            
-                <div class="card">
-                    <ul class="nav nav-pills nav-fill shadow">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Record</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Waste_FALab" asp-action="Index" asp-route-chemicalId="@ViewBag.ChemicalId">Waste</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="ActualRecord" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Actual Record</a>
-                        </li>
-                    </ul>
-                </div>
-            
+
+            <div class="card">
+                <ul class="nav nav-pills nav-fill shadow">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Record</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Waste_FALab" asp-action="Index" asp-route-chemicalId="@ViewBag.ChemicalId">Waste</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="ActualRecord" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Actual Record</a>
+                    </li>
+                </ul>
+            </div>
+
             <p>Current Stock: @ViewBag.CurrentStock</p>
             <hr class="m-0" />
             <div id="toolbar">
+                <!-- Selipkan kondisional disini untuk menampilkan tombol "Create" -->
                 <div class="btn-group me-2">
-                    <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
+                    @if (User.IsInRole("UserAdmin") || User.IsInRole("UserManager") || User.IsInRole("UserArea"))
+                    {
+                        <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
+                    }
                 </div>
             </div>
             <table id="table"
@@ -77,19 +82,39 @@
     </div>
 </div>
 
+<input type="hidden" id="isUserAdmin" value="@(((bool)ViewBag.IsUserAdmin).ToString().ToLower())" />
+<input type="hidden" id="isUserManager" value="@(((bool)ViewBag.IsUserManager).ToString().ToLower())" />
+<input type="hidden" id="isUserArea" value="@(((bool)ViewBag.IsUserArea).ToString().ToLower())" />
+<input type="hidden" id="isUserSupervisor" value="@(((bool)ViewBag.IsUserSupervisor).ToString().ToLower())" />
+
 @section Scripts {
     <script src="~/vendor/bootstrap-table/bootstrap-table.min.js"></script>
     <script src="~/vendor/bootstrap-table/bootstrap-table-sticky-header.min.js"></script>
-    <script src="~/vendor/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
     <script>
         function viewFormatter(value, row, index) {
+            let editButton = '';
+            let deleteButton = '';
+
+            const isUserAdmin = document.getElementById('isUserAdmin').value === 'true';
+            const isUserManager = document.getElementById('isUserManager').value === 'true';
+            const isUserArea = document.getElementById('isUserArea').value === 'true';
+            const isUserSupervisor = document.getElementById('isUserSupervisor').value === 'true';
+
+            if (isUserAdmin || isUserManager || isUserArea) {
+                editButton = `<a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
+            }
+
+            if (isUserAdmin) {
+                deleteButton = `<a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>`;
+            }
+
             return `
-                                                <a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>
-                                                <a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>
-                                            `;
+                        ${editButton}
+                        ${deleteButton}
+                    `;
         }
 
         function confirmDelete(id, chemicalId) {
@@ -132,17 +157,7 @@
         {
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
-                                });
-
-        $(function () {
-            var notyf = new Notyf();
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            @:notyf.success('@TempData["SuccessMessage"]');
-        }
-                        })
-
+                });
 
     </script>
 }

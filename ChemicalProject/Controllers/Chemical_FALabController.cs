@@ -30,14 +30,16 @@ namespace ChemicalProject.Controllers
 
         //API ENDPOINT
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetData()
         {
             var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
 
             if (User.IsInRole("UserAdmin") || !userAreaId.HasValue)
             {
-                // Jika user adalah admin (areaId null), tampilkan semua data
+                // Jika user adalah admin (areaId null), tampilkan semua data yang belum ditolak
                 var allChemicals = _context.Chemicals
+                    .Where(c => c.StatusManager != false && c.StatusESH != false)
                     .Select(c => new
                     {
                         id = c.Id,
@@ -64,9 +66,9 @@ namespace ChemicalProject.Controllers
             }
             else
             {
-                // Jika user bukan admin, filter berdasarkan areaId
+                // Jika user bukan admin, filter berdasarkan areaId dan tampilkan data yang belum ditolak
                 var chemicals = _context.Chemicals
-                    .Where(c => c.AreaId == userAreaId.Value)
+                    .Where(c => c.AreaId == userAreaId.Value && c.StatusManager != false && c.StatusESH != false)
                     .Select(c => new
                     {
                         id = c.Id,
@@ -165,6 +167,7 @@ namespace ChemicalProject.Controllers
             }
         }
         // GET: Chemical_FALab/Edit/5
+        [Authorize(Roles = "UserAdmin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -232,7 +235,9 @@ namespace ChemicalProject.Controllers
             return View(chemical_FALab);
         }
 
+
         // GET: Chemical_FALab/Delete/5
+        [Authorize(Roles = "UserAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

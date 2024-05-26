@@ -190,7 +190,12 @@
                 success: function (result) {
                     $('#table').bootstrapTable('refresh');
                     $('#approveModal').modal('hide');
-                    alert(result.message);
+                    // Menggunakan SweetAlert2 untuk alert berhasil
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: result.message,
+                    });
                 },
                 error: function () {
                     console.log('Error approving chemical.');
@@ -223,7 +228,12 @@
                 success: function (result) {
                     $('#table').bootstrapTable('refresh');
                     $('#rejectModal').modal('hide');
-                    alert(result.message);
+                    // Menggunakan SweetAlert2 untuk alert berhasil
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: result.message,
+                    });
                 },
                 error: function () {
                     console.log('Error rejecting chemical.');
