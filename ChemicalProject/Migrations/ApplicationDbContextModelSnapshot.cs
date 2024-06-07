@@ -50,7 +50,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("ChemicalId");
 
-                    b.ToTable("ActualRecords", (string)null);
+                    b.ToTable("ActualRecords");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Area", b =>
@@ -67,7 +67,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Areas", (string)null);
+                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Chemical_FALab", b =>
@@ -137,7 +137,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("Chemicals", (string)null);
+                    b.ToTable("Chemicals");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Records_FALab", b =>
@@ -182,7 +182,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("WasteId");
 
-                    b.ToTable("Records", (string)null);
+                    b.ToTable("Records");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.UserAdmin", b =>
@@ -208,7 +208,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("UserAdmins", (string)null);
+                    b.ToTable("UserAdmins");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.UserArea", b =>
@@ -242,7 +242,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("UserAreas", (string)null);
+                    b.ToTable("UserAreas");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.UserManager", b =>
@@ -268,7 +268,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("UserManagers", (string)null);
+                    b.ToTable("UserManagers");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.UserSuperVisor", b =>
@@ -294,7 +294,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("UserSuperVisors", (string)null);
+                    b.ToTable("UserSuperVisors");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.Waste_FALab", b =>
@@ -320,7 +320,7 @@ namespace ChemicalProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Wastes", (string)null);
+                    b.ToTable("Wastes");
                 });
 
             modelBuilder.Entity("ChemicalProject.Models.ActualRecord", b =>

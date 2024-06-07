@@ -17,7 +17,7 @@ namespace ChemicalProject.Models
         [ValidateNever]
         public Chemical_FALab Chemical_FALab { get; set; }
 
-        public int CurrentStock { get; set; } // Properti baru
+        public int CurrentStock { get; set; } 
     }
 
 }

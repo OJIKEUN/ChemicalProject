@@ -40,6 +40,10 @@
                         <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
                     }
                 </div>
+                <!-- Button to open the date filter modal -->
+                <div class="btn-group me-2">
+                    <button id="dateFilterButton" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#dateFilterModal">Filter By Date</button>
+                </div>
             </div>
             <table id="table"
                    data-toggle="table"
@@ -60,7 +64,6 @@
                    data-show-export="true"
                    data-export-types="['sql', 'excel', 'pdf']"
                    data-page-size="25">
-
                 <thead>
                     <tr>
                         <th data-field="id" data-sortable="true">ID</th>
@@ -68,7 +71,7 @@
                         <th data-field="badge" data-sortable="true">Badge</th>
                         <th data-field="receivedQuantity" data-sortable="true">Received Quantity</th>
                         <th data-field="consumption" data-sortable="true">Used Quantity</th>
-                        <th data-field="currentStock" data-sortable="true">Current Stock</th>
+                        <th data-field="currentStock" data-sortable="true" data-formatter="currentStockFormatter">Current Stock</th>
                         <th data-field="justify" data-sortable="true">Justification</th>
                         <th data-field="recordDate" data-sortable="true">Record Date</th>
                         <th data-field="receivedDate" data-sortable="true">Received Date</th>
@@ -76,8 +79,35 @@
                         <th data-formatter="viewFormatter" class="text-center no-space-three" data-width="100" data-width="180">Actions</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Date Range Filter Modal -->
+<div class="modal fade" id="dateFilterModal" tabindex="-1" aria-labelledby="dateFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dateFilterModalLabel">Filter By Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="dateFilterForm">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="applyDateFilter">Apply Filter</button>
+            </div>
         </div>
     </div>
 </div>
@@ -94,6 +124,24 @@
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
     <script>
+        $(function () {
+            var $table = $('#table');
+
+            $('#applyDateFilter').click(function () {
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+
+                if (startDate && endDate) {
+                    $table.bootstrapTable('refresh', {
+                        url: '@Url.Action("GetData", "Records_FALab")?id=@ViewBag.ChemicalId&startDate=' + startDate + '&endDate=' + endDate
+                    });
+                    $('#dateFilterModal').modal('hide');
+                } else {
+                    alert("Please choose both a start date and an end date");
+                }
+            });
+        });
+
         function viewFormatter(value, row, index) {
             let editButton = '';
             let deleteButton = '';
@@ -111,10 +159,14 @@
                 deleteButton = `<a href="#" class="btn btn-danger btn-sm shadow" onclick="confirmDelete(${row.id}, ${row.chemicalId})">Delete</a>`;
             }
 
-            return `
-                        ${editButton}
-                        ${deleteButton}
-                    `;
+            return `${editButton} ${deleteButton}`;
+        }
+
+        function currentStockFormatter(value, row) {
+            var minimumStock = row.minimumStock;
+            var currentStock = value;
+            var className = currentStock < minimumStock ? 'text-danger' : '';
+            return '<span class="' + className + '">' + value + '</span>';
         }
 
         function confirmDelete(id, chemicalId) {
@@ -158,6 +210,5 @@
             @:Swal.fire("Success!", "@TempData["SuccessMessage"]", "success");
         }
                 });
-
     </script>
 }

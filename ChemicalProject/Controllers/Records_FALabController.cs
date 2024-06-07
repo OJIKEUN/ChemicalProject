@@ -59,20 +59,28 @@ namespace ChemicalProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetData(int id)
+        public IActionResult GetData(int id, string startDate, string endDate)
         {
             var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
             var records = _context.Records
                 .Where(r => r.ChemicalId == id)
                 .Include(r => r.Chemical_FALab)
-                .OrderBy(r => r.Id) // Mengurutkan berdasarkan Id untuk menjaga urutan kronologis
+                .OrderBy(r => r.Id)
                 .ToList();
 
-            int currentStock = 0; // Inisialisasi nilai stok saat ini
+            // Jika ada parameter tanggal, parse dan filter data 
+            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
+            {
+                DateTime parsedStartDate = DateTime.Parse(startDate);
+                DateTime parsedEndDate = DateTime.Parse(endDate).AddDays(1).AddTicks(-1);
+                records = records.Where(r => r.RecordDate >= parsedStartDate && r.RecordDate <= parsedEndDate).ToList();
+            }
+
+            int currentStock = 0;
+            int minimumStock = chemical.MinimumStock;
             var data = records
                 .Select((r, index) =>
                 {
-                    // Kalkulasi stok saat ini secara kumulatif
                     currentStock += r.ReceivedQuantity - r.Consumption;
 
                     return new
@@ -82,17 +90,19 @@ namespace ChemicalProject.Controllers
                         chemicalName = r.Chemical_FALab.ChemicalName,
                         receivedQuantity = r.ReceivedQuantity,
                         consumption = r.Consumption,
-                        currentStock = currentStock, // Menggunakan nilai stok saat ini yang telah dikalkulasi
+                        currentStock = currentStock,
+                        minimumStock = minimumStock,
                         justify = r.Justify,
-                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy") : null,
-                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy") : null,
-                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy") : null
+                        recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null
                     };
                 })
                 .ToList();
 
             return Json(new { rows = data });
         }
+
 
         // GET: Records_FALab/Create/5
         [Authorize(Roles = "UserAdmin,UserManager,UserArea")]

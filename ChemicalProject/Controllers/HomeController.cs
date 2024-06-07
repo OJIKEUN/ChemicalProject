@@ -1,24 +1,46 @@
+using ChemicalProject.Data;
 using ChemicalProject.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace ChemicalProject.Controllers
 {
 	public class HomeController : Controller
 	{
-		private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> logger;
+        private readonly ApplicationDbContext _context;
 
-		public HomeController(ILogger<HomeController> logger)
-		{
-			_logger = logger;
-		}
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        {
+            this.logger = logger;
+            _context = context;
+        }
 
-		public IActionResult Index()
-		{
-			return View();
-		}
+        public IActionResult Index()
+        {
+            ViewBag.FALabCount = _context.Chemicals
+                .Count(c => c.Area.Name == "FA Lab" && c.StatusManager == true && c.StatusESH == true);
 
-		public IActionResult Privacy()
+            ViewBag.PlatingCount = _context.Chemicals
+                .Count(c => c.Area.Name == "Plating" && c.StatusManager == true && c.StatusESH == true);
+
+            ViewBag.A2PlatingCount = _context.Chemicals
+                .Count(c => c.Area.Name == "A2Plating" && c.StatusManager == true && c.StatusESH == true);
+            ViewBag.FacilityCount = _context.Chemicals
+                .Count(c => c.Area.Name == "Facility" && c.StatusManager == true && c.StatusESH == true);
+
+            /*ViewBag.FacilityBAT1Count = _context.Chemicals
+                .Count(c => c.Area.Name == "Facility BAT 1" && c.StatusManager == true && c.StatusESH == true);
+            ViewBag.FacilityCount = _context.Chemicals
+                .Count(c => c.Area.Name == "Facility BAT 3" && c.StatusManager == true && c.StatusESH == true);
+            ViewBag.FacilityCount = _context.Chemicals
+                .Count(c => c.Area.Name == "BAT3 Lab" && c.StatusManager == true && c.StatusESH == true);*/
+
+            return View();
+        }
+
+        public IActionResult Privacy()
 		{
 			return View();
 		}

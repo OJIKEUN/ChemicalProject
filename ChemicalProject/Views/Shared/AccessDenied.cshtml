@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Erica+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/fonts/style.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <link rel="stylesheet" href="css/main.min.css">
+    <link rel="stylesheet" href="vendor/particles/particles.css">
+    <style>
+        body, html {
+            background-color: black; /* Mengatur latar belakang halaman berwarna hitam */
+            color: white; /* Mengatur teks berwarna putih untuk kontras yang baik */
+            height: 100%;
+            margin: 0;
+        }
+
+        .error-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+            /* Terapkan font Source Sans 3 hanya pada teks Denied */
+            .error-screen h1 {
+                font-family: 'Source Sans 3', sans-serif;
+                color: black; /* Pastikan teks tetap berwarna hitam */
+            }
+
+            .error-screen h5 {
+                color: black; /* Pastikan h5 tetap berwarna hitam */
+            }
+
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="countdown-bg"></div>
+    <div class="error-screen">
+        <h1 style="color: #0A8276;">Denied</h1>
+        <h5 style="color: black;">We're sorry!<br />You cannot access this page because you don't have access</h5>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Go back to Dashboard</a>
+    </div>
+
+    <!-- Required jQuery first, then Bootstrap Bundle JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/moment.js"></script>
+
+    <!-- Particles JS -->
+    <script src="vendor/particles/particles.min.js"></script>
+    <script src="vendor/particles/particles-custom-error.js"></script>
+</body>
+</html>

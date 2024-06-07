@@ -1,6 +1,7 @@
 ﻿@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var isChemicalFALabOrRecordsActive = currentController == "Chemical_FALab" || currentController == "Records_FALab" || currentController == "Waste_FALab";
+
 }
 
 <nav id="sidebar" class="sidebar-wrapper">
@@ -63,7 +64,7 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a asp-controller="UserAdmin" asp-action="index" class="@(currentController == "UserAdmin" ? "current-page" : "")">
+                                <a asp-controller="UserAdmin" asp-action="index" class="@(currentController == "UserAdmin" ? "current-page" : "" )">
                                     <span class="menu-text">User</span>
                                 </a>
                             </li>
@@ -75,6 +76,12 @@
                             </li>
                         </ul>
                     </div>
+                </li>
+                <li class="@(currentController == "" ? "active-page-link" : "")">
+                    <a asp-controller="" asp-action="">
+                        <i class="icon-phone1"></i>
+                        <span class="menu-text">Call Centre</span>
+                    </a>
                 </li>
             </ul>
         </div>

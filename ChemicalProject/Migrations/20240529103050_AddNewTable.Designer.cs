@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChemicalProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240523123604_AddCurrentStockPropertyInActualModel")]
-    partial class AddCurrentStockPropertyInActualModel
+    [Migration("20240529103050_AddNewTable")]
+    partial class AddNewTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

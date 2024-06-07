@@ -11,6 +11,7 @@ using MimeKit;
 
 namespace ChemicalProject.Controllers
 {
+    [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
     public class Chemical_FALabController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,7 +23,6 @@ namespace ChemicalProject.Controllers
         }
 
         [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
-        // GET: Chemical_FALab
         public IActionResult Index()
         {
             return View();
@@ -30,12 +30,12 @@ namespace ChemicalProject.Controllers
 
         //API ENDPOINT
         [HttpGet]
-        [HttpGet]
+        [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
         public async Task<IActionResult> GetData()
         {
             var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
 
-            if (User.IsInRole("UserAdmin") || !userAreaId.HasValue)
+            if (User.IsInRole("UserAdmin") || User.IsInRole("UserManager") || !userAreaId.HasValue)
             {
                 // Jika user adalah admin (areaId null), tampilkan semua data yang belum ditolak
                 var allChemicals = _context.Chemicals
@@ -93,25 +93,6 @@ namespace ChemicalProject.Controllers
 
                 return Json(new { rows = chemicals });
             }
-        }
-
-
-        // GET: Chemical_FALab/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var chemical_FALab = await _context.Chemicals
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (chemical_FALab == null)
-            {
-                return NotFound();
-            }
-
-            return View(chemical_FALab);
         }
 
         // GET: Chemical_FALab/Create
@@ -284,3 +265,10 @@ namespace ChemicalProject.Controllers
         }
     }
 }
+
+
+
+/*if (!User.IsInRole("UserAdmin") && !User.IsInRole("UserManager") && !User.IsInRole("UserSuperVisor") && !User.IsInRole("UserArea"))
+{
+    return View("~/Views/Shared/AccessDenied.cshtml");
+}*/

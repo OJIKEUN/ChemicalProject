@@ -34,7 +34,10 @@
 
             <div id="toolbar">
                 <div class="btn-group me-2">
-                    <a asp-action="Create" asp-route-chemicalId="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
+                    @if (User.IsInRole("UserAdmin") || User.IsInRole("UserSuperVisor") || User.IsInRole("UserArea"))
+                    {
+                        <a asp-action="Create" asp-route-chemicalId="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
+                    }
                 </div>
             </div>
 
