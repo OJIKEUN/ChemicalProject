@@ -78,10 +78,26 @@ namespace ChemicalProject.Controllers
 
             int currentStock = 0;
             int minimumStock = chemical.MinimumStock;
+            bool isStockBelowMinimum = false;
             var data = records
                 .Select((r, index) =>
                 {
                     currentStock += r.ReceivedQuantity - r.Consumption;
+
+                    var today = DateTime.Now.Date;
+                    var expiryStatus = "normal";
+                    if (r.ExpiredDate.HasValue)
+                    {
+                        var twoMonthsBeforeExpiry = r.ExpiredDate.Value.AddMonths(-2);
+                        if (today >= r.ExpiredDate.Value)
+                        {
+                            expiryStatus = "expired";
+                        }
+                        else if (today >= twoMonthsBeforeExpiry)
+                        {
+                            expiryStatus = "nearExpiry";
+                        }
+                    }
 
                     return new
                     {
@@ -95,8 +111,9 @@ namespace ChemicalProject.Controllers
                         justify = r.Justify,
                         recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
                         receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null
-                    };
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        expiryStatus = expiryStatus
+                    };  
                 })
                 .ToList();
 
@@ -137,9 +154,9 @@ namespace ChemicalProject.Controllers
             if (ModelState.IsValid)
             {
                 records.ChemicalId = chemicalId;
-                records.RecordDate = DateTime.Now;
+                /*records.RecordDate = DateTime.Now;
                 records.ReceivedDate = DateTime.Now;
-                records.ExpiredDate = DateTime.Now.AddMonths(6);
+                records.ExpiredDate = DateTime.Now.AddMonths(6);*/
 
                 _context.Add(records);
                 _context.SaveChanges();

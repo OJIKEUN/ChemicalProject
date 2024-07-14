@@ -5,7 +5,7 @@
 }
 
 <div class="row gutters justify-content-center">
-    <div class="col-10 mt-5">
+    <div class="col-10 mt-3">
         <form asp-action="Edit">
             <div class="card m-0">
                 <div class="card-header">
@@ -63,18 +63,25 @@
                         
                         <div class="col-6">
                             <div class="form-group">
-                                <label asp-for="MinimumStock" class="control-label"></label>
+                                <label class="control-label">Minimum Stock</label>
                                 <input asp-for="MinimumStock" class="form-control" />
                                 <span asp-validation-for="MinimumStock" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-group">
+                                <label class="control-label">Cost Centre</label>
+                                <input asp-for="CostCentre" class="form-control" />
+                                <span asp-validation-for="CostCentre" class="text-danger"></span>
+                            </div>
+                        </div>
+                        @* <div class="col-6">
+                            <div class="form-group">
                                 <label asp-for="RequestDate" class="control-label"></label>
                                 <input type="date" asp-for="RequestDate" class="form-control" />
                                 <span asp-validation-for="RequestDate" class="text-danger"></span>
                             </div>
-                        </div>
+                        </div> *@
                     </div>
                     <div class="form-group">
                         <label asp-for="Justify" class="control-label"></label>

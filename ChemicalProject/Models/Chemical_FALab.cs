@@ -15,7 +15,8 @@ namespace ChemicalProject.Models
 		public string Unit { get; set; }
 		public int MinimumStock { get; set; }
 		public double Price { get; set; }
-		public string Justify { get; set; }
+        public string CostCentre { get; set; }
+        public string Justify { get; set; }
 		public DateTime? RequestDate { get; set; }
 
 		[ForeignKey("AreaId")]

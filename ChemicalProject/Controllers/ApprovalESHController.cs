@@ -45,7 +45,7 @@ namespace ChemicalProject.Controllers
                 {
                     id = g.Id,
                     Badge = g.Badge,
-                    AreaId = g.Area.Id,
+                    AreaName = g.Area.Name,
                     ChemicalName = g.ChemicalName,
                     Brand = g.Brand,
                     Packaging = g.Packaging,

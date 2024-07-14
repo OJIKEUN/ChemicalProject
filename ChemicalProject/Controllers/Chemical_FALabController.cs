@@ -50,6 +50,7 @@ namespace ChemicalProject.Controllers
                         unit = c.Unit,
                         minimumStock = c.MinimumStock,
                         price = c.Price,
+                        costCentre = c.CostCentre,
                         justify = c.Justify,
                         requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
                         statusManager = c.StatusManager,
@@ -79,6 +80,7 @@ namespace ChemicalProject.Controllers
                         unit = c.Unit,
                         minimumStock = c.MinimumStock,
                         price = c.Price,
+                        costCentre = c.CostCentre,
                         justify = c.Justify,
                         requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
                         statusManager = c.StatusManager,
@@ -104,7 +106,7 @@ namespace ChemicalProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,Price,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,CostCentre,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (ModelState.IsValid)
             {
@@ -168,7 +170,7 @@ namespace ChemicalProject.Controllers
         // POST: Chemical_FALab/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,price,Justify,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,CostCentre,Justify,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (id != chemical_FALab.Id)
             {
@@ -191,9 +193,9 @@ namespace ChemicalProject.Controllers
                     existingRecord.Packaging = chemical_FALab.Packaging;
                     existingRecord.Unit = chemical_FALab.Unit;
                     existingRecord.MinimumStock = chemical_FALab.MinimumStock;
-                    existingRecord.Price = chemical_FALab.Price;
+                    existingRecord.CostCentre = chemical_FALab.CostCentre;
                     existingRecord.Justify = chemical_FALab.Justify;
-                    existingRecord.RequestDate = chemical_FALab.RequestDate;
+                    /*existingRecord.RequestDate = chemical_FALab.RequestDate;*/
 
                     _context.Update(existingRecord);
                     TempData["SuccessMessage"] = "Chemical has been edited successfully.";
