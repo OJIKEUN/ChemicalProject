@@ -29,13 +29,10 @@ namespace ChemicalProject.Controllers
                 .Count(c => c.Area.Name == "A2Plating" && c.StatusManager == true && c.StatusESH == true);
             ViewBag.FacilityCount = _context.Chemicals
                 .Count(c => c.Area.Name == "Facility" && c.StatusManager == true && c.StatusESH == true);
+            ViewBag.BAT3LAB = _context.Chemicals
+               .Count(c => c.Area.Name == "BAT3LAB" && c.StatusManager == true && c.StatusESH == true);
 
-            /*ViewBag.FacilityBAT1Count = _context.Chemicals
-                .Count(c => c.Area.Name == "Facility BAT 1" && c.StatusManager == true && c.StatusESH == true);
-            ViewBag.FacilityCount = _context.Chemicals
-                .Count(c => c.Area.Name == "Facility BAT 3" && c.StatusManager == true && c.StatusESH == true);
-            ViewBag.FacilityCount = _context.Chemicals
-                .Count(c => c.Area.Name == "BAT3 Lab" && c.StatusManager == true && c.StatusESH == true);*/
+
 
             return View();
         }

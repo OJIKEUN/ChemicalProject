@@ -101,7 +101,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="wasteDate" class="form-label">Waste Date</label>
-                        <input type="date" class="form-control" id="wasteDate" name="wasteDate" required>
+                        <input type="datetime-local" class="form-control" id="wasteDate" name="wasteDate" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -150,6 +150,9 @@
                 $('#idRecord').val(idRecord);
                 $('#chemicalName').val(chemicalName);
                 $('#consumption').val(consumption);
+
+                // Reset waste date input for each modal show
+                $('#wasteDate').val('');
             });
 
             $('#addWasteForm').submit(function (e) {

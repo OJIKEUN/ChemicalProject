@@ -35,7 +35,7 @@ namespace ChemicalProject.Controllers
         {
             var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
 
-            if (User.IsInRole("UserAdmin") || User.IsInRole("UserManager") || !userAreaId.HasValue)
+            if (User.IsInRole("UserAdmin") || User.IsInRole("") || !userAreaId.HasValue)
             {
                 // Jika user adalah admin (areaId null), tampilkan semua data yang belum ditolak
                 var allChemicals = _context.Chemicals

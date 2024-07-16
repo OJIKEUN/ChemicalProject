@@ -69,6 +69,7 @@ namespace ChemicalProject.Controllers
             return Json(new { rows = records });
         }
 
+
         //ADD WASTE
         [HttpPost]
         public IActionResult AddWaste(int idRecord, string wasteType, int wasteQuantity, DateTime wasteDate, int badge)
@@ -103,5 +104,4 @@ namespace ChemicalProject.Controllers
             return Json(new { success = true, message = "Waste added/updated successfully." });
         }
     }
-
 }

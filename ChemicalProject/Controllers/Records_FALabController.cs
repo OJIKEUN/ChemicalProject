@@ -68,7 +68,7 @@ namespace ChemicalProject.Controllers
                 .OrderBy(r => r.Id)
                 .ToList();
 
-            // Jika ada parameter tanggal, parse dan filter data 
+            // Jika ada parameter tanggal, parse dan filter data
             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
                 DateTime parsedStartDate = DateTime.Parse(startDate);
@@ -84,21 +84,6 @@ namespace ChemicalProject.Controllers
                 {
                     currentStock += r.ReceivedQuantity - r.Consumption;
 
-                    var today = DateTime.Now.Date;
-                    var expiryStatus = "normal";
-                    if (r.ExpiredDate.HasValue)
-                    {
-                        var twoMonthsBeforeExpiry = r.ExpiredDate.Value.AddMonths(-2);
-                        if (today >= r.ExpiredDate.Value)
-                        {
-                            expiryStatus = "expired";
-                        }
-                        else if (today >= twoMonthsBeforeExpiry)
-                        {
-                            expiryStatus = "nearExpiry";
-                        }
-                    }
-
                     return new
                     {
                         id = r.Id,
@@ -111,9 +96,8 @@ namespace ChemicalProject.Controllers
                         justify = r.Justify,
                         recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
                         receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        expiryStatus = expiryStatus
-                    };  
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null
+                    };
                 })
                 .ToList();
 
@@ -156,7 +140,7 @@ namespace ChemicalProject.Controllers
                 records.ChemicalId = chemicalId;
                 /*records.RecordDate = DateTime.Now;
                 records.ReceivedDate = DateTime.Now;
-                records.ExpiredDate = DateTime.Now.AddMonths(6);*/
+                records.ExpiredDate = DateTime.Now.AddMonths(6);
 
                 _context.Add(records);
                 _context.SaveChanges();
