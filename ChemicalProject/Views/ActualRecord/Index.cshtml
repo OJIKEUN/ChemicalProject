@@ -1,6 +1,4 @@
-﻿@model IEnumerable<ChemicalProject.Models.ActualRecord>
-
-@{
+﻿@{
     ViewData["Title"] = "Actual Records";
 }
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
@@ -19,7 +17,7 @@
             <div class="card">
                 <ul class="nav nav-pills nav-fill shadow">
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Records_FALab" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Record</a>
+                        <a class="nav-link" asp-controller="Record" asp-action="Index" asp-route-id="@ViewBag.ChemicalId">Record</a>
                     </li>
                     @* <li class="nav-item">
                         <a class="nav-link" asp-controller="Waste_FALab" asp-action="Index" asp-route-chemicalId="@ViewBag.ChemicalId">Waste</a>

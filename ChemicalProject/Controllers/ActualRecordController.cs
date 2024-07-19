@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ChemicalProject.Controllers
 {
-    
+
     public class ActualRecordController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -33,10 +33,11 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
-            var isUserAdmin = userAreaId == null;
+            var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
+            var isUserAdmin = User.IsInRole("UserAdmin");
+            var isUserManager = User.IsInRole("UserManager");
 
-            if (isUserAdmin || userAreaId == chemical.AreaId)
+            if (isUserAdmin || isUserManager || userAreaIds.Contains(chemical.AreaId))
             {
                 var actualRecords = await _context.ActualRecords
                     .Where(r => r.ChemicalId == id)
@@ -46,6 +47,7 @@ namespace ChemicalProject.Controllers
                 var records = await _context.Records
                     .Where(r => r.ChemicalId == id)
                     .ToListAsync();
+
                 var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
 
                 ViewBag.ChemicalId = id;
@@ -53,8 +55,8 @@ namespace ChemicalProject.Controllers
                 ViewBag.CurrentStock = currentStock;
                 ViewBag.AreaId = chemical.AreaId;
 
-                ViewBag.IsUserAdmin = User.IsInRole("UserAdmin");
-                ViewBag.IsUserManager = User.IsInRole("UserManager");
+                ViewBag.IsUserAdmin = isUserAdmin;
+                ViewBag.IsUserManager = isUserManager;
                 ViewBag.IsUserArea = User.IsInRole("UserArea");
                 ViewBag.IsUserSupervisor = User.IsInRole("UserSuperVisor");
 
@@ -67,29 +69,43 @@ namespace ChemicalProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetData(int id)
+        [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
+        public async Task<IActionResult> GetData(int id)
         {
-            var chemical = _context.Chemicals.FirstOrDefault(c => c.Id == id);
-            var records = _context.ActualRecords
-                .Where(r => r.ChemicalId == id)
-                .Include(r => r.Chemical_FALab)
-                .OrderBy(r => r.Id) 
-                .ToList();
-            
-            var data = records
-                .Select(r => new
-                {
-                    id = r.Id,
-                    badge = r.Badge,
-                    areaId = r.Chemical_FALab.AreaId,
-                    chemicalName = r.Chemical_FALab.ChemicalName,
-                    description = r.Description,
-                    date = r.Date.ToString("dd MMM yyyy HH:mm"),
-                    currentStock = r.CurrentStock 
-                })
-                .ToList();
+            var chemical = await _context.Chemicals.FirstOrDefaultAsync(c => c.Id == id);
+            if (chemical == null)
+            {
+                return NotFound();
+            }
 
-            return Json(new { rows = data });
+            var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
+            var isUserAdmin = User.IsInRole("UserAdmin");
+            var isUserManager = User.IsInRole("UserManager");
+
+            if (isUserAdmin || isUserManager || userAreaIds.Contains(chemical.AreaId))
+            {
+                var records = await _context.ActualRecords
+                    .Where(r => r.ChemicalId == id)
+                    .Include(r => r.Chemical_FALab)
+                    .OrderBy(r => r.Id)
+                    .Select(r => new
+                    {
+                        id = r.Id,
+                        badge = r.Badge,
+                        areaId = r.Chemical_FALab.AreaId,
+                        chemicalName = r.Chemical_FALab.ChemicalName,
+                        description = r.Description,
+                        date = r.Date.ToString("dd MMM yyyy HH:mm"),
+                        currentStock = r.CurrentStock
+                    })
+                    .ToListAsync();
+
+                return Json(new { rows = records });
+            }
+            else
+            {
+                return Forbid();
+            }
         }
 
         // GET: ActualRecord/Create

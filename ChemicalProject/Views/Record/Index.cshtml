@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Record FALAB";
+    ViewData["Title"] = "Record";
 }
 
 <!-- Link ke Bootstrap Table dan CSS lainnya -->
@@ -59,7 +59,7 @@
                    data-show-columns="true"
                    data-buttons="[]"
                    data-key-events="true"
-                   data-url="@Url.Action("GetData", "Records_FALab")?id=@ViewBag.ChemicalId"
+                   data-url="@Url.Action("GetData", "Record")?id=@ViewBag.ChemicalId"
                    data-pagination="true"
                    data-show-export="true"
                    data-export-types="['sql', 'excel', 'pdf']"

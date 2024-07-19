@@ -1,12 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
 <div class="text-center">
     <h1 class="display-4 mt-5">Chemical Usage</h1>
     <p><a href="https://hsse.bth.infineon.com/">Visit more page about digitalization HSSE ?</a></p>
 </div>
-
 <div class="card mt-5">
     <div class="card-header">
         <div class="card-title mb-4 text-center">Total Chemical</div>
@@ -14,11 +12,11 @@
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="info-stats4">
                     <div class="info-icon">
-                        <i class="icon-style"></i>
+                        <i class="icon-layers"></i>
                     </div>
                     <div class="sale-num">
-                        <h3>@ViewBag.FALabCount</h3>
-                        <p>Chemical Area FA Lab</p>
+                        <h3>@ViewBag.BAT1FALabCount</h3>
+                        <p>BAT1 FA LAB</p>
                     </div>
                 </div>
             </div>
@@ -28,47 +26,46 @@
                         <i class="icon-layers"></i>
                     </div>
                     <div class="sale-num">
-                        <h3>@ViewBag.PlatingCount</h3>
-                        <p>Chemical Area Plating</p>
+                        <h3>@ViewBag.BAT1FacilityCount</h3>
+                        <p>BAT1 Facility</p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="info-stats4">
                     <div class="info-icon">
-                        <i class="icon-layers1"></i>
+                        <i class="icon-layers"></i>
                     </div>
                     <div class="sale-num">
-                        <h3>@ViewBag.A2PlatingCount</h3>
-                        <p>Chemical Area A2Plating</p>
+                        <h3>@ViewBag.BAT1A2PlatingCount</h3>
+                        <p>BAT1 A2 Plating</p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="info-stats4">
                     <div class="info-icon">
-                        <i class="icon-compare"></i>
+                        <i class="icon-layers"></i>
                     </div>
                     <div class="sale-num">
-                        <h3>@ViewBag.FacilityCount</h3>
-                        <p>Chemical Area Facility</p>
+                        <h3>@ViewBag.BAT1PlatingCount</h3>
+                        <p>BAT1 Plating</p>
                     </div>
                 </div>
-
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="info-stats4">
-                    <div class="info-icon">
-                        <i class="icon-compare"></i>
-                    </div>
-                    <div class="sale-num">
-                        <h3>@ViewBag.BAT3LAB</h3>
-                        <p>BAT 3 LAB</p>
-                    </div>
-                </div>
-
             </div>
         </div>
-       
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="info-stats4">
+                    <div class="info-icon">
+                        <i class="icon-layers"></i>
+                    </div>
+                    <div class="sale-num">
+                        <h3>@ViewBag.BAT3FacilityCount</h3>
+                        <p>BAT3 Facility</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChemicalProject.Controllers
 {
-    public class Records_FALabController : Controller
+    public class RecordController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserAreaService _userAreaService;
 
-        public Records_FALabController(ApplicationDbContext context, UserAreaService userAreaService)
+        public RecordController(ApplicationDbContext context, UserAreaService userAreaService)
         {
             _context = context;
             _userAreaService = userAreaService;
@@ -29,10 +29,11 @@ namespace ChemicalProject.Controllers
                 return NotFound();
             }
 
-            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
-            var isUserAdmin = userAreaId == null;
+            var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
+            var isUserAdmin = User.IsInRole("UserAdmin");
+            var isUserManager = User.IsInRole("UserManager");
 
-            if (isUserAdmin || userAreaId == chemical.AreaId)
+            if (isUserAdmin || isUserManager || userAreaIds.Contains(chemical.AreaId))
             {
                 var records = await _context.Records
                     .Where(r => r.ChemicalId == id)
@@ -45,8 +46,8 @@ namespace ChemicalProject.Controllers
                 ViewBag.ChemicalName = chemical.ChemicalName;
                 ViewBag.CurrentStock = currentStock;
 
-                ViewBag.IsUserAdmin = User.IsInRole("UserAdmin");
-                ViewBag.IsUserManager = User.IsInRole("UserManager");
+                ViewBag.IsUserAdmin = isUserAdmin;
+                ViewBag.IsUserManager = isUserManager;
                 ViewBag.IsUserArea = User.IsInRole("UserArea");
                 ViewBag.IsUserSupervisor = User.IsInRole("UserSupervisor");
 
@@ -68,7 +69,7 @@ namespace ChemicalProject.Controllers
                 .OrderBy(r => r.Id)
                 .ToList();
 
-            // Jika ada parameter tanggal, parse dan filter data
+            // Jika ada parameter tanggal, parse dan filter data 
             if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
             {
                 DateTime parsedStartDate = DateTime.Parse(startDate);
@@ -84,6 +85,21 @@ namespace ChemicalProject.Controllers
                 {
                     currentStock += r.ReceivedQuantity - r.Consumption;
 
+                    var today = DateTime.Now.Date;
+                    var expiryStatus = "normal";
+                    if (r.ExpiredDate.HasValue)
+                    {
+                        var twoMonthsBeforeExpiry = r.ExpiredDate.Value.AddMonths(-2);
+                        if (today >= r.ExpiredDate.Value)
+                        {
+                            expiryStatus = "expired";
+                        }
+                        else if (today >= twoMonthsBeforeExpiry)
+                        {
+                            expiryStatus = "nearExpiry";
+                        }
+                    }
+
                     return new
                     {
                         id = r.Id,
@@ -96,7 +112,8 @@ namespace ChemicalProject.Controllers
                         justify = r.Justify,
                         recordDate = r.RecordDate.HasValue ? r.RecordDate.Value.ToString("dd MMM yyyy HH:mm") : null,
                         receivedDate = r.ReceivedDate.HasValue ? r.ReceivedDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null
+                        expiredDate = r.ExpiredDate.HasValue ? r.ExpiredDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                        expiryStatus = expiryStatus
                     };
                 })
                 .ToList();
@@ -140,7 +157,7 @@ namespace ChemicalProject.Controllers
                 records.ChemicalId = chemicalId;
                 /*records.RecordDate = DateTime.Now;
                 records.ReceivedDate = DateTime.Now;
-                records.ExpiredDate = DateTime.Now.AddMonths(6);
+                records.ExpiredDate = DateTime.Now.AddMonths(6);*/
 
                 _context.Add(records);
                 _context.SaveChanges();
@@ -241,7 +258,7 @@ namespace ChemicalProject.Controllers
                 return Json(new { success = true });
             }
 
-            return Json(new { success = false }); 
+            return Json(new { success = false });
         }
     }
 }

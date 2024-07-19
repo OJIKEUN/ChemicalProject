@@ -33,7 +33,7 @@
                    data-show-columns="true"
                    data-buttons="[]"
                    data-key-events="true"
-                   data-url="@Url.Action("GetData", "Chemical_FALab")"
+                   data-url="@Url.Action("GetData", "Chemical")"
                    data-pagination="true"
                    data-show-export="true"
                    data-export-data-type="all"
@@ -83,12 +83,12 @@
             const isUserAdmin = JSON.parse(document.getElementById('isUserAdmin').value);
 
             if (isUserAdmin) {
-                editButton = `<a href="@Url.Action("Edit", "Chemical_FALab")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
-                deleteButton = `<a href="@Url.Action("Delete", "Chemical_FALab")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>`;
+                editButton = `<a href="@Url.Action("Edit", "Chemical")?id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
+                deleteButton = `<a href="@Url.Action("Delete", "Chemical")?id=${row.id}" class="btn btn-danger btn-sm shadow">Delete</a>`;
             }
 
             if (row.statusManager === true && row.statusESH === true) {
-                indexButton = `<a href="@Url.Action("Index", "Records_FALab")?id=${row.id}" class="btn btn-primary btn-sm shadow">Records</a>`;
+                indexButton = `<a href="@Url.Action("Index", "Record")?id=${row.id}" class="btn btn-primary btn-sm shadow">Records</a>`;
             } else {
                 indexButton = `<button class="btn btn-primary btn-sm shadow" disabled>Records</button>`;
             }

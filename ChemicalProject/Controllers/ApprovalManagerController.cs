@@ -27,18 +27,21 @@ namespace ChemicalProject.Controllers
         }
 
         [Authorize(Roles = "UserAdmin,UserManager")]
-        // GET: Chemical_FALab
         public async Task<IActionResult> Index()
         {
-            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
-            var isUserAdmin = userAreaId == null;
+            var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
+            var isUserAdmin = User.IsInRole("UserAdmin");
+
             if (isUserAdmin)
             {
-                return View();
+                var allChemicals = await _context.Chemicals
+                    .Where(c => c.StatusManager == null)
+                    .ToListAsync();
+                return View(allChemicals);
             }
             else
             {
-                var isUserManager = await _context.UserManagers.AnyAsync(u => u.UserName == User.Identity.Name);
+                var isUserManager = User.IsInRole("UserManager");
                 if (isUserManager)
                 {
                     var currentUserAreaId = _context.UserManagers.FirstOrDefault(u => u.UserName == User.Identity.Name)?.AreaId;
@@ -55,15 +58,14 @@ namespace ChemicalProject.Controllers
             }
         }
 
-        // API ENDPOINT
         [HttpGet]
         public async Task<IActionResult> GetData()
         {
-            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
-            var isUserAdmin = userAreaId == null;
+            var isUserAdmin = User.IsInRole("UserAdmin");
+
             if (isUserAdmin)
             {
-                var chemicals = _context.Chemicals
+                var chemicals = await _context.Chemicals
                     .Where(g => g.StatusManager == null)
                     .Select(g => new
                     {
@@ -84,16 +86,16 @@ namespace ChemicalProject.Controllers
                         StatusESH = g.StatusESH,
                         RemarkESH = g.RemarkESH,
                         approvalDateESH = g.ApprovalDateESH.HasValue ? g.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
-                    }).ToList();
+                    }).ToListAsync();
                 return Json(new { rows = chemicals });
             }
             else
             {
-                var isUserManager = await _context.UserManagers.AnyAsync(u => u.UserName == User.Identity.Name);
+                var isUserManager = User.IsInRole("UserManager");
                 if (isUserManager)
                 {
                     var currentUserAreaId = _context.UserManagers.FirstOrDefault(u => u.UserName == User.Identity.Name)?.AreaId;
-                    var chemicals = _context.Chemicals
+                    var chemicals = await _context.Chemicals
                         .Where(g => g.AreaId == currentUserAreaId && g.StatusManager == null)
                         .Select(g => new
                         {
@@ -114,7 +116,7 @@ namespace ChemicalProject.Controllers
                             StatusESH = g.StatusESH,
                             RemarkESH = g.RemarkESH,
                             approvalDateESH = g.ApprovalDateESH.HasValue ? g.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        }).ToList();
+                        }).ToListAsync();
                     return Json(new { rows = chemicals });
                 }
                 else
@@ -123,8 +125,9 @@ namespace ChemicalProject.Controllers
                 }
             }
         }
+    
 
-        [HttpPost]
+    [HttpPost]
         public async Task<IActionResult> Approve(int? id, string remark)
         {
             var chemical = await _context.Chemicals.FindAsync(id);

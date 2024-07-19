@@ -1,6 +1,6 @@
 ﻿@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    var isChemicalFALabOrRecordsActive = currentController == "Chemical_FALab" || currentController == "Records_FALab" || currentController == "Waste_FALab";
+    var isChemicalOrRecordsActive = currentController == "Chemical" || currentController == "Record" || currentController == "Waste_FALab";
 
 }
 
@@ -26,8 +26,8 @@
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
-                <li class="@(isChemicalFALabOrRecordsActive ? "active-page-link" : "")">
-                    <a asp-controller="Chemical_FALab" asp-action="Index">
+                <li class="@(isChemicalOrRecordsActive ? "active-page-link" : "")">
+                    <a asp-controller="Chemical" asp-action="Index">
                         <i class="icon-database"></i>
                         <span class="menu-text">Chemical</span>
                     </a>
@@ -77,12 +77,12 @@
                         </ul>
                     </div>
                 </li>
-                <li class="@(currentController == "" ? "active-page-link" : "")">
+                @* <li class="@(currentController == "" ? "active-page-link" : "")">
                     <a asp-controller="" asp-action="">
                         <i class="icon-phone1"></i>
                         <span class="menu-text">Call Centre</span>
                     </a>
-                </li>
+                </li> *@
             </ul>
         </div>
         <!-- sidebar menu end -->

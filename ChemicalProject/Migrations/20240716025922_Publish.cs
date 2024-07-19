@@ -6,13 +6,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChemicalProject.Migrations
 {
     /// <inheritdoc />
-    public partial class AddNewTable : Migration
+    public partial class Publish : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "CC_Schema");
+
             migrationBuilder.CreateTable(
                 name: "Areas",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -26,6 +30,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Wastes",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -42,6 +47,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Chemicals",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -53,6 +59,7 @@ namespace ChemicalProject.Migrations
                     Unit = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MinimumStock = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
+                    CostCentre = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Justify = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RequestDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AreaId = table.Column<int>(type: "int", nullable: false),
@@ -70,6 +77,7 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_Chemicals_Areas_AreaId",
                         column: x => x.AreaId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Areas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -77,6 +85,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserAdmins",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -91,12 +100,14 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_UserAdmins_Areas_AreaId",
                         column: x => x.AreaId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Areas",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserAreas",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -113,6 +124,7 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_UserAreas_Areas_AreaId",
                         column: x => x.AreaId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Areas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -120,6 +132,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserManagers",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -134,6 +147,7 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_UserManagers_Areas_AreaId",
                         column: x => x.AreaId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Areas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -141,6 +155,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserSuperVisors",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -155,6 +170,7 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_UserSuperVisors_Areas_AreaId",
                         column: x => x.AreaId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Areas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -162,6 +178,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ActualRecords",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -178,6 +195,7 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_ActualRecords_Chemicals_ChemicalId",
                         column: x => x.ChemicalId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Chemicals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -185,6 +203,7 @@ namespace ChemicalProject.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Records",
+                schema: "CC_Schema",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -205,53 +224,63 @@ namespace ChemicalProject.Migrations
                     table.ForeignKey(
                         name: "FK_Records_Chemicals_ChemicalId",
                         column: x => x.ChemicalId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Chemicals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Records_Wastes_WasteId",
                         column: x => x.WasteId,
+                        principalSchema: "CC_Schema",
                         principalTable: "Wastes",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActualRecords_ChemicalId",
+                schema: "CC_Schema",
                 table: "ActualRecords",
                 column: "ChemicalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chemicals_AreaId",
+                schema: "CC_Schema",
                 table: "Chemicals",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Records_ChemicalId",
+                schema: "CC_Schema",
                 table: "Records",
                 column: "ChemicalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Records_WasteId",
+                schema: "CC_Schema",
                 table: "Records",
                 column: "WasteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAdmins_AreaId",
+                schema: "CC_Schema",
                 table: "UserAdmins",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAreas_AreaId",
+                schema: "CC_Schema",
                 table: "UserAreas",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserManagers_AreaId",
+                schema: "CC_Schema",
                 table: "UserManagers",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSuperVisors_AreaId",
+                schema: "CC_Schema",
                 table: "UserSuperVisors",
                 column: "AreaId");
         }
@@ -260,31 +289,40 @@ namespace ChemicalProject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActualRecords");
+                name: "ActualRecords",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "Records");
+                name: "Records",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "UserAdmins");
+                name: "UserAdmins",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "UserAreas");
+                name: "UserAreas",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "UserManagers");
+                name: "UserManagers",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "UserSuperVisors");
+                name: "UserSuperVisors",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "Chemicals");
+                name: "Chemicals",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "Wastes");
+                name: "Wastes",
+                schema: "CC_Schema");
 
             migrationBuilder.DropTable(
-                name: "Areas");
+                name: "Areas",
+                schema: "CC_Schema");
         }
     }
 }

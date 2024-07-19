@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "ESH Appoval";
 }
 <link href="~/vendor/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
@@ -220,7 +220,7 @@
             $.ajax({
                 url: '@Url.Action("Reject", "ApprovalESH")',
                 type: 'POST',
-                data: { id: chemicalId,remark: remark, __RequestVerificationToken: token },
+                data: { id: chemicalId, remark: remark, __RequestVerificationToken: token },
                 success: function (result) {
                     $('#table').bootstrapTable('refresh');
                     $('#rejectModal').modal('hide');
@@ -246,7 +246,7 @@
 
         $(document).on('mouseover', '[data-bs-toggle="popover"]', function () {
             $(this).popover('show');
-        }); 
+        });
 
 
     </script>

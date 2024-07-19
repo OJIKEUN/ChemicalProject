@@ -5,11 +5,11 @@ namespace ChemicalProject.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        private readonly IConfiguration _configuration;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
+            _configuration = configuration;
         }
-
         public DbSet<Chemical_FALab> Chemicals { get; set; }
         public DbSet<Records_FALab> Records { get; set; }
         public DbSet<Waste_FALab> Wastes { get; set; }
@@ -19,5 +19,19 @@ namespace ChemicalProject.Data
         public DbSet<UserAdmin> UserAdmins { get; set; }
         public DbSet<Area> Areas { get; set; }
         public DbSet<ActualRecord> ActualRecords { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseSqlServer(
+                connectionString,
+                x => x.MigrationsHistoryTable("CC_EFMigrationsHistory", "CC_Schema"));
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultSchema("CC_Schema");
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

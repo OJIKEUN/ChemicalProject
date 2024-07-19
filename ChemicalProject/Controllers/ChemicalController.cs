@@ -12,11 +12,11 @@ using MimeKit;
 namespace ChemicalProject.Controllers
 {
     [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
-    public class Chemical_FALabController : Controller
+    public class ChemicalController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserAreaService _userAreaService;
-        public Chemical_FALabController(ApplicationDbContext context, UserAreaService userAreaService)
+        public ChemicalController(ApplicationDbContext context, UserAreaService userAreaService)
         {
             _context = context;
             _userAreaService = userAreaService;
@@ -33,72 +33,46 @@ namespace ChemicalProject.Controllers
         [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
         public async Task<IActionResult> GetData()
         {
-            var userAreaId = await _userAreaService.GetUserAreaIdAsync(User);
+            var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
 
-            if (User.IsInRole("UserAdmin") || User.IsInRole("") || !userAreaId.HasValue)
+            IQueryable<Chemical_FALab> query = _context.Chemicals
+                .Where(c => c.StatusManager != false && c.StatusESH != false);
+
+            if (!User.IsInRole("UserAdmin") && !User.IsInRole("UserManager") && userAreaIds.Any())
             {
-                // Jika user adalah admin (areaId null), tampilkan semua data yang belum ditolak
-                var allChemicals = _context.Chemicals
-                    .Where(c => c.StatusManager != false && c.StatusESH != false)
-                    .Select(c => new
-                    {
-                        id = c.Id,
-                        badge = c.Badge,
-                        chemicalName = c.ChemicalName,
-                        brand = c.Brand,
-                        packaging = c.Packaging,
-                        unit = c.Unit,
-                        minimumStock = c.MinimumStock,
-                        price = c.Price,
-                        costCentre = c.CostCentre,
-                        justify = c.Justify,
-                        requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        statusManager = c.StatusManager,
-                        remarkManager = c.RemarkManager,
-                        approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        statusESH = c.StatusESH,
-                        remarkESH = c.RemarkESH,
-                        approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        areaName = c.Area.Name
-                    })
-                    .ToList();
-
-                return Json(new { rows = allChemicals });
+                query = query.Where(c => userAreaIds.Contains(c.AreaId));
             }
-            else
-            {
-                // Jika user bukan admin, filter berdasarkan areaId dan tampilkan data yang belum ditolak
-                var chemicals = _context.Chemicals
-                    .Where(c => c.AreaId == userAreaId.Value && c.StatusManager != false && c.StatusESH != false)
-                    .Select(c => new
-                    {
-                        id = c.Id,
-                        badge = c.Badge,
-                        chemicalName = c.ChemicalName,
-                        brand = c.Brand,
-                        packaging = c.Packaging,
-                        unit = c.Unit,
-                        minimumStock = c.MinimumStock,
-                        price = c.Price,
-                        costCentre = c.CostCentre,
-                        justify = c.Justify,
-                        requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        statusManager = c.StatusManager,
-                        remarkManager = c.RemarkManager,
-                        approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        statusESH = c.StatusESH,
-                        remarkESH = c.RemarkESH,
-                        approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
-                        areaName = c.Area.Name
-                    })
-                    .ToList();
 
-                return Json(new { rows = chemicals });
-            }
+            var chemicals = await query
+                .Select(c => new
+                {
+                    id = c.Id,
+                    badge = c.Badge,
+                    chemicalName = c.ChemicalName,
+                    brand = c.Brand,
+                    packaging = c.Packaging,
+                    unit = c.Unit,
+                    minimumStock = c.MinimumStock,
+                    price = c.Price,
+                    costCentre = c.CostCentre,
+                    justify = c.Justify,
+                    requestDate = c.RequestDate.HasValue ? c.RequestDate.Value.ToString("dd MMM yyyy HH:mm") : null,
+                    statusManager = c.StatusManager,
+                    remarkManager = c.RemarkManager,
+                    approvalDateManager = c.ApprovalDateManager.HasValue ? c.ApprovalDateManager.Value.ToString("dd MMM yyyy HH:mm") : null,
+                    statusESH = c.StatusESH,
+                    remarkESH = c.RemarkESH,
+                    approvalDateESH = c.ApprovalDateESH.HasValue ? c.ApprovalDateESH.Value.ToString("dd MMM yyyy HH:mm") : null,
+                    areaName = c.Area.Name
+                })
+                .ToListAsync();
+
+            return Json(new { rows = chemicals });
         }
+    
 
-        // GET: Chemical_FALab/Create
-        public IActionResult Create()
+    // GET: Chemical_FALab/Create
+    public IActionResult Create()
         {
             ViewBag.AreaId = new SelectList(_context.Areas, "Id", "Name");
             return View();
