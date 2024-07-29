@@ -8,7 +8,7 @@
 
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Chemical_FALab")">Chemical</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Chemical")">Chemical</a></li>
     <li class="breadcrumb-item active">Records</li>
 </ol>
 
@@ -33,14 +33,12 @@
             <p>Current Stock: @ViewBag.CurrentStock</p>
             <hr class="m-0" />
             <div id="toolbar">
-                <!-- Selipkan kondisional disini untuk menampilkan tombol "Create" -->
                 <div class="btn-group me-2">
                     @if (User.IsInRole("UserAdmin") || User.IsInRole("UserManager") || User.IsInRole("UserArea"))
                     {
                         <a asp-action="Create" asp-route-id="@ViewBag.ChemicalId" class="btn btn-primary">Create New</a>
                     }
                 </div>
-                <!-- Button to open the date filter modal -->
                 <div class="btn-group me-2">
                     <button id="dateFilterButton" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#dateFilterModal">Filter By Date</button>
                 </div>
@@ -68,7 +66,7 @@
                     <tr>
                         <th data-field="id" data-sortable="true">ID</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
-                        <th data-field="badge" data-sortable="true">Badge</th>
+                        <th data-field="name" data-sortable="true">Name</th>
                         <th data-field="receivedQuantity" data-sortable="true">Received Quantity</th>
                         <th data-field="consumption" data-sortable="true">Used Quantity</th>
                         <th data-field="currentStock" data-sortable="true" data-formatter="currentStockFormatter">Current Stock</th>
@@ -111,6 +109,7 @@
         </div>
     </div>
 </div>
+
 
 <input type="hidden" id="isUserAdmin" value="@(((bool)ViewBag.IsUserAdmin).ToString().ToLower())" />
 <input type="hidden" id="isUserManager" value="@(((bool)ViewBag.IsUserManager).ToString().ToLower())" />
@@ -169,7 +168,7 @@
             const isUserSupervisor = document.getElementById('isUserSupervisor').value === 'true';
 
             if (isUserAdmin || isUserManager || isUserArea) {
-                editButton = `<a href="@Url.Action("Edit", "Records_FALab")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
+                editButton = `<a href="@Url.Action("Edit", "Record")?chemicalId=${row.chemicalId}&id=${row.id}" class="btn btn-info btn-sm shadow">Edit</a>`;
             }
 
             if (isUserAdmin) {
@@ -206,7 +205,7 @@
 
         function deleteRecord(id, chemicalId) {
             $.ajax({
-                url: '@Url.Action("DeleteConfirmed", "Records_FALab")',
+                url: '@Url.Action("DeleteConfirmed", "Record")',
                 type: 'POST',
                 data: { id: id, chemicalId: chemicalId },
                 success: function (data) {

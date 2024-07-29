@@ -12,6 +12,7 @@ namespace ChemicalProject.Models
         [ForeignKey("ChemicalId")]
         [ValidateNever]
         public Chemical_FALab Chemical_FALab { get; set; }
+        public string Name { get; set; }
         public int Badge { get; set; }
         public int ReceivedQuantity { get; set; }
         public int Consumption { get; set; }    

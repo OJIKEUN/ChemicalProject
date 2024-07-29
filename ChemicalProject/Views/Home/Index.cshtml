@@ -1,71 +1,115 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Dashboard";
+    var userAreaIds = ViewBag.UserAreaIds as List<int>;
+    var isAdmin = ViewBag.IsAdmin;
 }
-<div class="text-center">
-    <h1 class="display-4 mt-5">Chemical Usage</h1>
-    <p><a href="https://hsse.bth.infineon.com/">Visit more page about digitalization HSSE ?</a></p>
+<div class="card bg-green mt-3">
+    <div class="text-center">
+        <h1 class="display-4 mt-3 text-white shadow">Chemical Usage</h1>
+        <p><a href="https://hsse.bth.infineon.com/" class="text-white text-scale">Visit more page about digitalization HSSE ?</a></p>
+    </div>
 </div>
-<div class="card mt-5">
+
+<div class="card">
     <div class="card-header">
-        <div class="card-title mb-4 text-center">Total Chemical</div>
-        <div class="row gutters ">
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="info-stats4">
-                    <div class="info-icon">
-                        <i class="icon-layers"></i>
-                    </div>
-                    <div class="sale-num">
-                        <h3>@ViewBag.BAT1FALabCount</h3>
-                        <p>BAT1 FA LAB</p>
-                    </div>
+        <div class="card-title mb-4 text-center text-green">Total Chemical</div>
+        <div class="row justify-content-center">
+            @foreach (var area in Model)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                    @if (area.HasAccess)
+                    {
+                        <a href="@Url.Action("Index", "Chemical", new { areaId = area.AreaId })" class="text-decoration-none">
+                            <div class="info-stats4 bg-green shadow">
+                                <div class="info-icon text-white">
+                                    <i class="icon-layers"></i>
+                                </div>
+                                <div class="sale-num text-white">
+                                    <h3>@area.ChemicalCount</h3>
+                                    <p class="text-white">@area.AreaName</p>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="info-stats4 bg-green shadow" onclick="showAccessDeniedModal()">
+                            <div class="info-icon text-white">
+                                <i class="icon-layers"></i>
+                            </div>
+                            <div class="sale-num text-white">
+                                <h3>@area.ChemicalCount</h3>
+                                <p class="text-white">@area.AreaName</p>
+                            </div>
+                        </div>
+                    }
                 </div>
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="info-stats4">
-                    <div class="info-icon">
-                        <i class="icon-layers"></i>
-                    </div>
-                    <div class="sale-num">
-                        <h3>@ViewBag.BAT1FacilityCount</h3>
-                        <p>BAT1 Facility</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="info-stats4">
-                    <div class="info-icon">
-                        <i class="icon-layers"></i>
-                    </div>
-                    <div class="sale-num">
-                        <h3>@ViewBag.BAT1A2PlatingCount</h3>
-                        <p>BAT1 A2 Plating</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="info-stats4">
-                    <div class="info-icon">
-                        <i class="icon-layers"></i>
-                    </div>
-                    <div class="sale-num">
-                        <h3>@ViewBag.BAT1PlatingCount</h3>
-                        <p>BAT1 Plating</p>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
-        <div class="row justify-content-center mt-4">
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="info-stats4">
-                    <div class="info-icon">
-                        <i class="icon-layers"></i>
-                    </div>
-                    <div class="sale-num">
-                        <h3>@ViewBag.BAT3FacilityCount</h3>
-                        <p>BAT3 Facility</p>
-                    </div>
-                </div>
+    </div>
+</div>
+
+<!-- Modal for Access Denied -->
+<div class="modal fade"  id="accessDeniedModal" tabindex="-1" role="dialog" aria-labelledby="accessDeniedModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-danger ">Access Denied</h1>
+            </div>
+            <div class="modal-body ">
+                <h5>You do not have access to this area. Select the appropriate area.</h5>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
+
+
+@section Scripts {
+    <script>
+        function showAccessDeniedModal() {
+            var modal = new bootstrap.Modal(document.getElementById('accessDeniedModal'));
+            modal.show();
+        }
+    </script>
+}
+
+
+@* @if (User.IsInRole("UserAdmin") || User.IsInRole("UserManager"))
+{
+    <form asp-controller="ExpireCheck" asp-action="CheckExpiration" method="post">
+        <button type="submit" class="btn btn-primary">Check Chemical Expiration</button>
+    </form>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+
+@if (User.IsInRole("UserAdmin") || User.IsInRole("UserManager"))
+{
+    <form asp-controller="StockCheck" asp-action="CheckStock" method="post">
+        <button type="submit" class="btn btn-primary">Check Chemical Stock</button>
+    </form>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+} *@

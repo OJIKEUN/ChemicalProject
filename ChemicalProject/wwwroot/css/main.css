@@ -7194,3 +7194,45 @@ div .stats-detail a:hover {
     --bs-popover-body-padding-x: 1rem;
     --bs-popover-body-padding-y: .5rem;
 }
+
+
+
+.bg-light-green {
+    background-color: #e8f5e9;
+}
+
+.bg-green {
+    background-color: #0a8276;
+}
+
+.text-white {
+    color: white;
+}
+
+.text-green {
+    color: #0a8276;
+}
+
+.info-stats4 {
+    transition: all 0.3s ease;
+}
+
+    .info-stats4:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+.text-scale {
+    transition: all 0.3s ease;
+}
+
+    .text-scale:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+
+
+.info-stats4 {
+    width: 100%;
+}

@@ -9,6 +9,7 @@ namespace ChemicalProject.Models
 		[Key]
 		public int Id { get; set; }
 		public int Badge { get; set; }
+		public string Name { get; set; }
 		public string ChemicalName { get; set; }
 		public string Brand { get; set; }
 		public int Packaging { get; set; }

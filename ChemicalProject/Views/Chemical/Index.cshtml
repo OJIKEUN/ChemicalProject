@@ -44,7 +44,8 @@
                 <thead>
                     <tr>
                         <th data-field="id" data-sortable="true">ID</th>
-                        <th data-field="badge" data-sortable="true">Badge</th>
+                        <th data-field="name" data-sortable="true">Name</th>
+                        @* <th data-field="badge" data-sortable="true">Badge</th> *@
                         <th data-field="areaName" data-sortable="true">Area Name</th>
                         <th data-field="chemicalName" data-sortable="true">Chemical Name</th>
                         <th data-field="brand" data-sortable="true">Brand</th>
@@ -150,6 +151,14 @@
 
         $(document).on('mouseover', '[data-bs-toggle="popover"]', function () {
             $(this).popover('show');
-        }); 
+        });
+
+        $(document).ready(function () {
+            var areaId = '@ViewBag.AreaId';
+            $('#chemicalTable').bootstrapTable({
+                url: '/Chemical/GetData' + (areaId ? '?areaId=' + areaId : ''),
+                // ... (opsi lainnya)
+            });
+        });
     </script>
 }

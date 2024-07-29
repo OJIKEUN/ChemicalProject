@@ -23,22 +23,28 @@ namespace ChemicalProject.Controllers
         }
 
         [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
-        public IActionResult Index()
+        public IActionResult Index(int? areaId)
         {
+            ViewBag.AreaId = areaId;
             return View();
         }
 
         //API ENDPOINT
+
         [HttpGet]
         [Authorize(Roles = "UserAdmin,UserManager,UserSuperVisor,UserArea")]
-        public async Task<IActionResult> GetData()
+        public async Task<IActionResult> GetData(int? areaId)
         {
             var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
 
             IQueryable<Chemical_FALab> query = _context.Chemicals
                 .Where(c => c.StatusManager != false && c.StatusESH != false);
 
-            if (!User.IsInRole("UserAdmin") && !User.IsInRole("UserManager") && userAreaIds.Any())
+            if (areaId.HasValue)
+            {
+                query = query.Where(c => c.AreaId == areaId.Value);
+            }
+            else if (!User.IsInRole("UserAdmin") && !User.IsInRole("UserManager") && userAreaIds.Any())
             {
                 query = query.Where(c => userAreaIds.Contains(c.AreaId));
             }
@@ -47,6 +53,7 @@ namespace ChemicalProject.Controllers
                 .Select(c => new
                 {
                     id = c.Id,
+                    name = c.Name,
                     badge = c.Badge,
                     chemicalName = c.ChemicalName,
                     brand = c.Brand,
@@ -80,7 +87,7 @@ namespace ChemicalProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,CostCentre,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Create([Bind("Id,Name,Badge,ChemicalName,Brand,Packaging,Unit,MinimumStock,CostCentre,Justify,Status,RequestDate,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (ModelState.IsValid)
             {
@@ -144,7 +151,7 @@ namespace ChemicalProject.Controllers
         // POST: Chemical_FALab/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,CostCentre,Justify,AreaId")] Chemical_FALab chemical_FALab)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Badge,ChemicalName,Brand,Packaging,MinimumStock,Unit,CostCentre,Justify,AreaId")] Chemical_FALab chemical_FALab)
         {
             if (id != chemical_FALab.Id)
             {
@@ -160,6 +167,7 @@ namespace ChemicalProject.Controllers
             {
                 try
                 {
+                    existingRecord.Name = chemical_FALab.Name;
                     existingRecord.Badge = chemical_FALab.Badge;
                     existingRecord.AreaId = chemical_FALab.AreaId;
                     existingRecord.ChemicalName = chemical_FALab.ChemicalName;

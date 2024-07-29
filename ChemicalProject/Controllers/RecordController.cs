@@ -103,7 +103,8 @@ namespace ChemicalProject.Controllers
                     return new
                     {
                         id = r.Id,
-                        badge = r.Badge,
+                        name = r.Name,
+                        /*badge = r.Badge,*/
                         chemicalName = r.Chemical_FALab.ChemicalName,
                         receivedQuantity = r.ReceivedQuantity,
                         consumption = r.Consumption,
@@ -149,7 +150,7 @@ namespace ChemicalProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
-        public IActionResult Create(int chemicalId, [Bind("Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
+        public IActionResult Create(int chemicalId, [Bind("Name,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records)
         {
 
             if (ModelState.IsValid)
@@ -195,7 +196,7 @@ namespace ChemicalProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "UserAdmin,UserManager,UserArea")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Badge,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records_FALab)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ChemicalId,Name,ReceivedQuantity,Consumption,Justify,RecordDate,ReceivedDate,ExpiredDate")] Records_FALab records_FALab)
         {
             if (id != records_FALab.Id)
             {

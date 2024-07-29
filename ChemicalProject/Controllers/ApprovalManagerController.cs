@@ -70,7 +70,8 @@ namespace ChemicalProject.Controllers
                     .Select(g => new
                     {
                         id = g.Id,
-                        Badge = g.Badge,
+                        Name = g.Name,
+                        /*Badge = g.Badge,*/
                         AreaName = g.Area.Name,
                         ChemicalName = g.ChemicalName,
                         Brand = g.Brand,
@@ -100,7 +101,8 @@ namespace ChemicalProject.Controllers
                         .Select(g => new
                         {
                             id = g.Id,
-                            Badge = g.Badge,
+                            Name = g.Name,
+                            /*Badge = g.Badge,*/
                             AreaName = g.Area.Name,
                             ChemicalName = g.ChemicalName,
                             Brand = g.Brand,
@@ -178,6 +180,9 @@ namespace ChemicalProject.Controllers
             }
             // Add admin ESH email to CC
             message.Cc.Add(new MailboxAddress("Admin ESH", "Andas.Puranda@infineon.com"));
+            message.Cc.Add(new MailboxAddress("Admin ESH", "Agung.Sanjaya@infineon.com"));
+            message.Cc.Add(new MailboxAddress("Admin ESH", "NOVA.ASTUTI@INFINEON.COM"));
+            
             string approvalStatus = approved ? "approved" : "rejected";
             message.Subject = $"Chemical Request {approvalStatus} by Manager: {chemical.ChemicalName}";
             var bodyBuilder = new BodyBuilder();

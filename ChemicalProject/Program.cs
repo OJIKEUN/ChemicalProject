@@ -1,5 +1,8 @@
+using ChemicalProject.Controllers;
 using ChemicalProject.Data;
 using ChemicalProject.Helper;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -12,9 +15,28 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
    .AddNegotiate();
 builder.Services.AddScoped<UserAreaService>();
+
 // layanan DbContext    
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// HANGFIRE
+builder.Services.AddTransient<HangfireAuthorizationFilter>();
+builder.Services.AddHangfire(config =>
+    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+          .UseSimpleAssemblyNameTypeSerializer()
+          .UseRecommendedSerializerSettings()
+          .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+          {
+              CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+              SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+              QueuePollInterval = TimeSpan.FromMinutes(1),
+              UseRecommendedIsolationLevel = true,
+              DisableGlobalLocks = true,
+              PrepareSchemaIfNecessary = true,
+              SchemaName = "CC_Schema"
+          }));
+builder.Services.AddHangfireServer();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -27,6 +49,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddRazorPages();
+
 var app = builder.Build();
     
 // Configure the HTTP request pipeline.
@@ -88,4 +111,15 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthorizationFilter() },
+    StatsPollingInterval = 600000,
+    IgnoreAntiforgeryToken = true
+});
+
+RecurringJob.AddOrUpdate<ExpireCheckController>(x => x.CheckExpiration(), Cron.Daily(23, 0));
+RecurringJob.AddOrUpdate<StockCheckController>(x => x.CheckStock(), Cron.Daily(23, 0));
+
 app.Run();
+

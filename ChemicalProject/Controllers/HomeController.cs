@@ -3,6 +3,7 @@ using ChemicalProject.Helper;
 using ChemicalProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace ChemicalProject.Controllers
@@ -19,30 +20,37 @@ namespace ChemicalProject.Controllers
             _context = context;
             _userAreaService = userAreaService;
         }
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index()
         {
-            ViewBag.BAT1FALabCount = _context.Chemicals
-                .Count(c => c.Area.Name == "BAT1 FA LAB" && c.StatusManager == true && c.StatusESH == true);
-            ViewBag.BAT1FacilityCount = _context.Chemicals
-                .Count(c => c.Area.Name == "BAT1 Facility" && c.StatusManager == true && c.StatusESH == true);
-            ViewBag.BAT1A2PlatingCount = _context.Chemicals
-                .Count(c => c.Area.Name == "BAT1 A2 Plating" && c.StatusManager == true && c.StatusESH == true);
-            ViewBag.BAT1PlatingCount = _context.Chemicals
-                .Count(c => c.Area.Name == "BAT1 Plating" && c.StatusManager == true && c.StatusESH == true);
-            ViewBag.BAT3FacilityCount = _context.Chemicals
-                .Count(c => c.Area.Name == "BAT3 Facility" && c.StatusManager == true && c.StatusESH == true);
-            return View();
+            var userAreaIds = await _userAreaService.GetUserAreaIdsAsync(User);
+            var isAdmin = User.IsInRole("UserAdmin") || User.IsInRole("UserManager");
+
+            var areaChemicalCounts = await _context.Areas
+                .Select(area => new
+                {
+                    AreaId = area.Id,
+                    AreaName = area.Name,
+                    ChemicalCount = _context.Chemicals.Count(c => c.AreaId == area.Id && c.StatusManager == true && c.StatusESH == true),
+                    HasAccess = isAdmin || userAreaIds.Contains(area.Id)
+                })
+                .ToListAsync();
+
+            ViewBag.UserAreaIds = userAreaIds;
+            ViewBag.IsAdmin = isAdmin;
+
+            return View(areaChemicalCounts);
         }
 
         public IActionResult Privacy()
-		{
-			return View();
-		}
+        {
+            return View();
+        }
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
 }
