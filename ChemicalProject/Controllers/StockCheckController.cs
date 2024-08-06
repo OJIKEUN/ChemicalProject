@@ -44,15 +44,23 @@ namespace ChemicalProject.Controllers
                     .Where(r => r.ChemicalId == chemical.Id)
                     .ToListAsync();
 
-                var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
-
-                if (currentStock <= chemical.MinimumStock)
+                // Periksa apakah ada record untuk chemical ini
+                if (records.Any())
                 {
-                    chemicalsToNotify.Add((chemical, currentStock));
+                    var currentStock = records.Sum(r => r.ReceivedQuantity) - records.Sum(r => r.Consumption);
+
+                    if (currentStock <= chemical.MinimumStock)
+                    {
+                        chemicalsToNotify.Add((chemical, currentStock));
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation($"No records found for chemical {chemical.ChemicalName}. Skipping email notification.");
                 }
             }
 
-            _logger.LogInformation($"Found {chemicalsToNotify.Count} chemicals with low stock.");
+            _logger.LogInformation($"Found {chemicalsToNotify.Count} chemicals with minimum stock.");
 
             foreach (var (chemical, currentStock) in chemicalsToNotify)
             {
@@ -95,16 +103,16 @@ namespace ChemicalProject.Controllers
 
             message.Cc.Add(MailboxAddress.Parse("Andas.Puranda@infineon.com"));
             message.Cc.Add(MailboxAddress.Parse("Agung.Sanjaya@infineon.com"));
+            message.Cc.Add(MailboxAddress.Parse("NOVA.ASTUTI@infineon.com"));
 
-            message.Subject = $"Low Stock Alert: {chemical.ChemicalName}";
+            message.Subject = $"Minimum Stock Alert: {chemical.ChemicalName}";
             var bodyBuilder = new BodyBuilder();
             bodyBuilder.HtmlBody = $@"
-            <p>Dear All,</p>
-            <p>This is to notify you that the stock of chemical {chemical.ChemicalName} in {chemical.Area.Name} has reached or fallen below the minimum stock level.</p>
-            <p>Current Stock: {currentStock}</p>
-            <p>Minimum Stock: {chemical.MinimumStock}</p>
-            <p>Please take necessary actions to replenish the stock.</p>
-            <p>Regards,<br>ESH Notification System</p>";
+            <h4>Dear All,</h4>
+            <p>This alert notifies you that,</p>
+            <p>Chemical Name : {chemical.ChemicalName},<br>Area : {chemical.Area.Name}.<br> Current Stock: {currentStock}. <br>Minimum Stock: {chemical.MinimumStock}</p>
+            <p>Has reached the minimum stock number. <br> Prompt action to replenish the stock is required to ensure business continuity and efficiency. </p>
+            <h4>Regards,<br>Chemical Monitoring System</h4>";
 
             message.Body = bodyBuilder.ToMessageBody();
 
@@ -117,11 +125,11 @@ namespace ChemicalProject.Controllers
                     await client.DisconnectAsync(true);
                 }
 
-                _logger.LogInformation($"Low stock email sent for chemical {chemical.ChemicalName}");
+                _logger.LogInformation($"Minimum stock email sent for chemical {chemical.ChemicalName}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to send low stock email for chemical {chemical.ChemicalName}");
+                _logger.LogError(ex, $"Failed to send minimum stock email for chemical {chemical.ChemicalName}");
             }
         }
     }

@@ -14,11 +14,11 @@
         <div class="card-header">Chemical</div>
         <hr class="m-0" />
         <div class="card-body">
-            <div id="toolbar">
+            @* <div id="toolbar">
                 <div class="btn-group me-2">
                     <a class="btn btn-primary " asp-action="Create">Add New Chemical</a>
                 </div>
-            </div>
+            </div> *@
             <table id="table"
                    data-toggle="table"
                    data-locale="en-US"
@@ -55,7 +55,7 @@
                         <th data-field="costCentre" data-sortable="true" data-width="150">Cost Centre</th>
                         <th data-field="justify" data-sortable="true" data-width="150">Justification</th>
                         <th data-field="statusManager" data-sortable="true" data-formatter="statusManager" class="text-center">Status Manager</th>
-                        <th data-field="statusESH" data-sortable="true" data-formatter="statusESH" class="text-center">Status ESH</th>
+                        @* <th data-field="statusESH" data-sortable="true" data-formatter="statusESH" class="text-center">Status ESH</th> *@
                         <th data-field="requestDate" data-sortable="true">Request Date</th>
                         <th data-formatter="viewFormatter" class="text-center no-space-three" >Actions</th>
                     </tr>

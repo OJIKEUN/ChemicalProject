@@ -104,7 +104,7 @@ namespace ChemicalProject.Controllers
                 }
 
                 TempData["SuccessMessage"] = "Chemical has been created successfully.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
 
             ViewBag.AreaId = new SelectList(_context.Areas, "Id", "Name");

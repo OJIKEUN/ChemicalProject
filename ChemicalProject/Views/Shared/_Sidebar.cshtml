@@ -1,7 +1,16 @@
 ﻿@{
-    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    var isChemicalOrRecordsActive = currentController == "Chemical" || currentController == "Record" || currentController == "Waste_FALab";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString().ToLower();
 
+    var isDashboard = (currentController == "home") ||
+                      (currentController == "chemical" && currentAction != "create") ||
+                      currentController == "record" ||
+                      currentController == "waste_falab" ||
+                      currentController == "actualrecord";
+
+    var isAddChemical = currentController == "chemical" && currentAction == "create";
+    var isRequestActive = currentController == "approvalmanager" || currentController == "approvalesh";
+    var isManageAccountActive = currentController == "useradmin" || currentController == "area";
 }
 
 <nav id="sidebar" class="sidebar-wrapper">
@@ -12,43 +21,41 @@
         </a>
     </div>
     <hr style="margin-top:1rem;margin-bottom:0;"> <!-- Sidebar brand end -->
-
     <!-- Sidebar content start -->
     <div class="sidebar-content">
         <!-- sidebar menu start -->
         <div class="sidebar-menu">
             <ul>
-                <!-- user menu -->
                 <li class="header-menu">USER</li>
-                <li class="@(currentController == "Home" ? "active-page-link" : "")">
+                <li class="@(isDashboard ? "active-page-link" : "")">
                     <a asp-controller="Home" asp-action="Index">
                         <i class="icon-home2"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
-                @* <li class="@(isChemicalOrRecordsActive ? "active-page-link" : "")">
-                    <a asp-controller="Chemical" asp-action="Index">
+                <li class="@(isAddChemical ? "active-page-link" : "")">
+                    <a asp-controller="Chemical" asp-action="Create">
                         <i class="icon-database"></i>
-                        <span class="menu-text">Chemical</span>
+                        <span class="menu-text">Add New Chemical</span>
                     </a>
-                </li> *@
+                </li>
 
                 <!-- admin menu -->
                 <li class="header-menu">ADMIN</li>
-                <li class="@(currentController == "ApprovalManager" || currentController == "ApprovalESH" ? "active sidebar-dropdown" : "sidebar-dropdown")">
+                <li class="@(isRequestActive ? "active sidebar-dropdown" : "sidebar-dropdown")">
                     <a href="#">
                         <i class="icon-done_all"></i>
                         <span class="menu-text">Request</span>
                     </a>
-                    <div class="sidebar-submenu">
+                    <div class="sidebar-submenu" style="display: @(isRequestActive ? "block" : "none");">
                         <ul>
                             <li>
-                                <a asp-controller="ApprovalManager" asp-action="Index" class="@(currentController == "ApprovalManager" ? "current-page" : "")">
+                                <a asp-controller="ApprovalManager" asp-action="Index" class="@(currentController == "approvalmanager" ? "current-page" : "")">
                                     <span class="menu-text">Approval Manager</span>
                                 </a>
                             </li>
                             <li>
-                                <a asp-controller="ApprovalESH" asp-action="Index" class="@(currentController == "ApprovalESH" ? "current-page" : "")">
+                                <a asp-controller="ApprovalESH" asp-action="Index" class="@(currentController == "approvalesh" ? "current-page" : "")">
                                     <span class="menu-text">Approval ESH</span>
                                 </a>
                             </li>
@@ -56,33 +63,27 @@
                     </div>
                 </li>
 
-                <li class="@(currentController == "UserAdmin" || currentController == "Area" ? "active sidebar-dropdown" : "sidebar-dropdown")">
+                <li class="@(isManageAccountActive ? "active sidebar-dropdown" : "sidebar-dropdown")">
                     <a href="#">
                         <i class="icon-users"></i>
                         <span class="menu-text">Manage Account</span>
                     </a>
-                    <div class="sidebar-submenu">
+                    <div class="sidebar-submenu" style="display: @(isManageAccountActive ? "block" : "none");">
                         <ul>
                             <li>
-                                <a asp-controller="UserAdmin" asp-action="index" class="@(currentController == "UserAdmin" ? "current-page" : "" )">
+                                <a asp-controller="UserAdmin" asp-action="index" class="@(currentController == "useradmin" ? "current-page" : "" )">
                                     <span class="menu-text">User</span>
                                 </a>
                             </li>
-                             
+
                             <li>
-                                <a asp-controller="Area" asp-action="index" class="@(currentController == "Area" ? "current-page" : "")">
+                                <a asp-controller="Area" asp-action="index" class="@(currentController == "area" ? "current-page" : "")">
                                     <span class="menu-text">Area</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                @* <li class="@(currentController == "" ? "active-page-link" : "")">
-                    <a asp-controller="" asp-action="">
-                        <i class="icon-phone1"></i>
-                        <span class="menu-text">Call Centre</span>
-                    </a>
-                </li> *@
             </ul>
         </div>
         <!-- sidebar menu end -->
